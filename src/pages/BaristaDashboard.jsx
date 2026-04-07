@@ -87,6 +87,7 @@ function BaristaDashboard() {
         <BaristaCalendarGrid
           slots={slots}
           startDate={cafe?.start_date}
+          endDate={cafe?.end_date}
           barista={barista}
           token={barista.token}
           selectedDate={selectedDate}
@@ -99,6 +100,8 @@ function BaristaDashboard() {
             slots={slotsByDate[selectedDate] || []}
             barista={barista}
             token={barista.token}
+            startDate={cafe?.start_date}
+            endDate={cafe?.end_date}
             onClose={() => setSelectedDate(null)}
             onSlotCreated={handleSlotCreated}
             onSlotDeleted={handleSlotDeleted}

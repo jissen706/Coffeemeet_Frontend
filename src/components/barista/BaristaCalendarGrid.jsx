@@ -28,7 +28,7 @@ function getMonthDays(year, month) {
   return cells;
 }
 
-function BaristaCalendarGrid({ slots, startDate, barista, token, selectedDate, onSelectDate, onSlotCreated }) {
+function BaristaCalendarGrid({ slots, startDate, endDate, barista, token, selectedDate, onSelectDate, onSlotCreated }) {
   const [pickerDate, setPickerDate] = useState(null);
   const initialMonth = useMemo(() => {
     if (startDate) {
@@ -110,6 +110,7 @@ function BaristaCalendarGrid({ slots, startDate, barista, token, selectedDate, o
             const daySlots   = cell.dateStr ? (slotsByDate[cell.dateStr] || []) : [];
             const openCount  = daySlots.filter((s) => s.customer === null).length;
             const ownCount   = daySlots.filter((s) => s.barista.id === barista.id).length;
+            const inRange    = cell.dateStr && (!startDate || cell.dateStr >= startDate) && (!endDate || cell.dateStr <= endDate);
             return (
               <DayCell
                 key={i}
@@ -125,7 +126,7 @@ function BaristaCalendarGrid({ slots, startDate, barista, token, selectedDate, o
                   ? () => onSelectDate(selectedDate === cell.dateStr ? null : cell.dateStr)
                   : undefined
                 }
-                onCreateClick={cell.inMonth
+                onCreateClick={cell.inMonth && inRange
                   ? () => setPickerDate(cell.dateStr)
                   : undefined
                 }

@@ -39,6 +39,7 @@ export default function BaristaTimeRangePicker({ date, existingSlots, barista, t
   const [location,    setLocation]    = useState('');
   const [zoomLink,    setZoomLink]    = useState('');
   const [locErr,      setLocErr]      = useState('');
+  const [submitErr,   setSubmitErr]   = useState('');
   const [submitting,  setSubmitting]  = useState(false);
 
   const selStart = dragStart !== null && dragCurrent !== null ? Math.min(dragStart, dragCurrent) : null;
@@ -76,20 +77,26 @@ export default function BaristaTimeRangePicker({ date, existingSlots, barista, t
     if (selStart === null || slotCount === 0) return;
 
     setSubmitting(true);
+    setSubmitErr('');
     const results = [];
-    for (const { startMins, endMins } of previewSlots) {
-      const slotData = {
-        barista_id: barista.id,
-        start_time: minsToISO(startMins, date),
-        end_time:   minsToISO(endMins,   date),
-        location:   location.trim(),
-        meet_link:  zoomLink.trim() || null,
-      };
-      const created = await createSlot(barista.cafe_id, slotData, token);
-      results.push(created);
+    try {
+      for (const { startMins, endMins } of previewSlots) {
+        const slotData = {
+          barista_id: barista.id,
+          start_time: minsToISO(startMins, date),
+          end_time:   minsToISO(endMins,   date),
+          location:   location.trim(),
+          meet_link:  zoomLink.trim() || null,
+        };
+        const created = await createSlot(barista.cafe_id, slotData, token);
+        results.push(created);
+      }
+      onConfirm(results);
+    } catch (err) {
+      setSubmitErr(err.message || 'Failed to create slots');
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
-    onConfirm(results);
   }
 
   const formatted = new Date(date + 'T12:00:00').toLocaleDateString('en-US', {
@@ -261,6 +268,7 @@ export default function BaristaTimeRangePicker({ date, existingSlots, barista, t
               </div>
             </div>
 
+            {submitErr && <div className="form-error" style={{marginBottom: 8}}>{submitErr}</div>}
             <button
               className="tpicker-confirm-btn"
               onClick={handleConfirm}

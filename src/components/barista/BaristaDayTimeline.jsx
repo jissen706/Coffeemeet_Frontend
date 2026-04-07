@@ -17,12 +17,13 @@ function layoutSlots(slots){
   return rows.map(({slot,col})=>({slot,col,n}));
 }
 
-export default function BaristaDayTimeline({ date, slots, barista, token, onClose, onSlotCreated, onSlotDeleted }) {
+export default function BaristaDayTimeline({ date, slots, barista, token, startDate, endDate, onClose, onSlotCreated, onSlotDeleted }) {
   const [showPicker, setShowPicker]     = useState(false);
   const [detailSlot, setDetailSlot]     = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const formatted = new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
   const ownSlots  = slots.filter(s=>s.barista.id===barista.id);
+  const inRange   = (!startDate || date >= startDate) && (!endDate || date <= endDate);
   const openCount = slots.filter(s=>s.customer===null).length;
   const laid      = useMemo(()=>layoutSlots(slots),[slots]);
 
@@ -45,7 +46,8 @@ export default function BaristaDayTimeline({ date, slots, barista, token, onClos
             <div className="tl-sub">{ownSlots.length} yours · {openCount} open total</div>
           </div>
           <div style={{display:'flex',gap:6,alignItems:'center'}}>
-            <button className="tl-create-btn" onClick={()=>setShowPicker(true)}>+ Create</button>
+            {inRange && <button className="tl-create-btn" onClick={()=>setShowPicker(true)}>+ Create</button>}
+            {!inRange && <span style={{fontSize:'0.75rem',color:'#999'}}>Outside cafe dates</span>}
             <button className="tl-close" onClick={onClose}>✕</button>
           </div>
         </div>
