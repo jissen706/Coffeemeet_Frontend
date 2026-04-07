@@ -8,7 +8,7 @@ import ShareLinksPopup from '../../components/owner/ShareLinksPopup';
 import {
   getOwnerCafe, getOwnerCafeSlots,
   getOwnerCafeBaristas, getCafeCustomers,
-  removeBarista, removeCustomer,
+  removeBarista, removeCustomer, exportCafeData,
 } from '../../api';
 
 const EXPERTISE_OPTIONS = [
@@ -175,6 +175,11 @@ export default function OwnerCafeView() {
             {cafe && (
               <button className="owner-share-btn" onClick={() => setShowShare(true)}>
                 Share Links
+              </button>
+            )}
+            {cafe && (
+              <button className="owner-share-btn" onClick={() => exportCafeData(cafe.id, auth.token, cafe.name)}>
+                Export CSV
               </button>
             )}
             <button className="owner-settings-btn" onClick={() => setShowSettings(true)}>

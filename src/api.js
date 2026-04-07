@@ -201,6 +201,20 @@ export async function getCafeCustomers(cafeId, token) {
   return res.json();
 }
 
+export async function exportCafeData(cafeId, token, cafeName) {
+  const res = await fetch(`${BASE_URL}/cafes/${cafeId}/export`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`Failed to export data (${res.status})`);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${cafeName.replace(/\s+/g, '_')}_export.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export async function removeBarista(baristaId, token) {
   const res = await fetch(`${BASE_URL}/baristas/${baristaId}`, {
     method: 'DELETE',
