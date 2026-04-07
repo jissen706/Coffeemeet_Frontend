@@ -28,7 +28,7 @@ export default function LandingPage() {
         <div className="landing-logo">☕</div>
         <h1 className="landing-title">CoffeeMeet</h1>
         <p className="landing-subtitle">
-          The easiest way to schedule coffee chats for your club.
+          The easiest way to schedule coffee chats for your organization.
         </p>
       </div>
 
@@ -36,7 +36,7 @@ export default function LandingPage() {
         {/* Owner */}
         <div className="landing-card">
           <div className="landing-card-icon">🏠</div>
-          <h2 className="landing-card-title">I'm a Club Leader</h2>
+          <h2 className="landing-card-title">I'm a Host</h2>
           <p className="landing-card-desc">
             Create a café, set availability, and share links with your baristas and members.
           </p>
@@ -53,7 +53,7 @@ export default function LandingPage() {
           <div className="landing-card-icon">👋</div>
           <h2 className="landing-card-title">I'm a Barista</h2>
           <p className="landing-card-desc">
-            Got a join code from your club leader? Enter it here to manage your slots.
+            Got a join code from your host? Enter it here to manage your slots.
           </p>
           <form onSubmit={handleBaristaGo} style={{ width: '100%' }}>
             <input
@@ -75,7 +75,7 @@ export default function LandingPage() {
           <div className="landing-card-icon">📅</div>
           <h2 className="landing-card-title">I'm booking a Coffee Chat</h2>
           <p className="landing-card-desc">
-            Have a link or join code from your club? Enter it here to see available slots.
+            Have a link or join code from your organization? Enter it here to see available slots.
           </p>
           <form onSubmit={handleCustomerGo} style={{ width: '100%' }}>
             <input
