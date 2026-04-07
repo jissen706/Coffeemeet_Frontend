@@ -178,7 +178,13 @@ export default function OwnerCafeView() {
               </button>
             )}
             {cafe && (
-              <button className="owner-share-btn" onClick={() => exportCafeData(cafe.id, auth.token, cafe.name)}>
+              <button className="owner-share-btn" onClick={async () => {
+                try {
+                  await exportCafeData(cafe.id, auth.token, cafe.name);
+                } catch (err) {
+                  alert(`Export failed: ${err.message}`);
+                }
+              }}>
                 Export CSV
               </button>
             )}

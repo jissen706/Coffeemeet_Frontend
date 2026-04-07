@@ -211,7 +211,9 @@ export async function exportCafeData(cafeId, token, cafeName) {
   const a = document.createElement('a');
   a.href = url;
   a.download = `${cafeName.replace(/\s+/g, '_')}_export.csv`;
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
