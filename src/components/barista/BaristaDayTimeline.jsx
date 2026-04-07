@@ -55,7 +55,7 @@ export default function BaristaDayTimeline({ date, slots, barista, token, startD
         {/* Slot detail card */}
         {detailSlot&&(
           <div className="tl-detail-card">
-            <div className="tl-detail-row"><span className="tl-detail-label">Barista</span><span className="tl-detail-val">{detailSlot.barista.name}</span></div>
+            <div className="tl-detail-row"><span className="tl-detail-label">Host</span><span className="tl-detail-val">{detailSlot.barista.name}</span></div>
             <div className="tl-detail-row"><span className="tl-detail-label">Time</span><span className="tl-detail-val">{fmtTime(detailSlot.start_time)} – {fmtTime(detailSlot.end_time)}</span></div>
             <div className="tl-detail-row"><span className="tl-detail-label">Location</span><span className="tl-detail-val">{detailSlot.location||'—'}</span></div>
             <div className="tl-detail-row"><span className="tl-detail-label">Status</span><span className="tl-detail-val">{detailSlot.customer?`Booked — ${detailSlot.customer.name}`:'Open'}</span></div>

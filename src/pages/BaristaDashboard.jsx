@@ -80,7 +80,7 @@ function BaristaDashboard() {
       <Header
         cafeName={cafe?.name || 'CoffeeMeet'}
         description="Manage your slots and availability"
-        ownerName={`Barista: ${barista.name}`}
+        ownerName={`Host: ${barista.name}`}
       />
       <div className="main-layout">
         <BaristaSidebar baristas={allBaristas} />

@@ -1,11 +1,11 @@
 function BaristaSidebar({ baristas }) {
   return (
     <aside className="barista-sidebar">
-      <div className="sidebar-title">Baristas</div>
+      <div className="sidebar-title">Hosts</div>
 
       {baristas.length === 0 ? (
         <div className="no-baristas">
-          <span>No baristas registered yet.</span>
+          <span>No hosts registered yet.</span>
         </div>
       ) : (
         baristas.map((barista) => {

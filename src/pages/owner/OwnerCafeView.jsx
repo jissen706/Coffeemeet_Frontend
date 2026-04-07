@@ -218,16 +218,17 @@ export default function OwnerCafeView() {
         ) : (
           <div className="owner-people-view">
             <div className="owner-people-view-header">
-              {activeView === 'baristas' ? 'Baristas' : 'Customers'}
+              {activeView === 'baristas' ? 'Hosts' : 'Participants'}
               <span className="owner-people-count">
                 {!peopleLoading && `${peopleList.length} total`}
+
               </span>
             </div>
             {peopleLoading ? (
               <div className="owner-loading">Loading…</div>
             ) : peopleList.length === 0 ? (
               <div className="owner-empty-list">
-                No {activeView} registered yet.
+                No {activeView === 'baristas' ? 'hosts' : 'participants'} registered yet.
               </div>
             ) : (
               <div className="owner-people-grid">

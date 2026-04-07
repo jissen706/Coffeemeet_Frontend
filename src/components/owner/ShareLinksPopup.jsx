@@ -25,7 +25,7 @@ export default function ShareLinksPopup({ cafe, onClose }) {
 
         <div className="share-links">
           <div className="share-link-block">
-            <div className="share-link-label">Customer Link</div>
+            <div className="share-link-label">Participant Link</div>
             <div className="share-link-url">{customerLink}</div>
             <button
               className={`share-copy-btn${copiedCustomer ? ' copied' : ''}`}
@@ -34,7 +34,7 @@ export default function ShareLinksPopup({ cafe, onClose }) {
           </div>
 
           <div className="share-link-block">
-            <div className="share-link-label">Barista Link</div>
+            <div className="share-link-label">Host Link</div>
             <div className="share-link-url">{baristaLink}</div>
             <button
               className={`share-copy-btn${copiedBarista ? ' copied' : ''}`}

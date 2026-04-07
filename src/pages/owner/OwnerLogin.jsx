@@ -45,7 +45,7 @@ export default function OwnerLogin({ onLogin }) {
         <div className="owner-login-header">
           <span className="owner-login-icon">☕</span>
           <h1 className="owner-login-title">CoffeeMeet</h1>
-          <p className="owner-login-sub">Owner Portal</p>
+          <p className="owner-login-sub">Admin Portal</p>
         </div>
 
         <div className="owner-mode-tabs">

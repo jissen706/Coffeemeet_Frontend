@@ -36,24 +36,24 @@ export default function LandingPage() {
         {/* Owner */}
         <div className="landing-card">
           <div className="landing-card-icon">🏠</div>
-          <h2 className="landing-card-title">I'm a Host</h2>
+          <h2 className="landing-card-title">I'm an Admin</h2>
           <p className="landing-card-desc">
-            Create a café, set availability, and share links with your baristas and members.
+            Create a café, set availability, and share links with your hosts and participants.
           </p>
           <button
             className="landing-card-btn landing-card-btn-primary"
             onClick={() => navigate('/owner')}
           >
-            Go to Owner Portal →
+            Go to Admin Portal →
           </button>
         </div>
 
         {/* Barista */}
         <div className="landing-card">
           <div className="landing-card-icon">👋</div>
-          <h2 className="landing-card-title">I'm a Barista</h2>
+          <h2 className="landing-card-title">I'm a Host</h2>
           <p className="landing-card-desc">
-            Got a join code from your host? Enter it here to manage your slots.
+            Got a join code from your admin? Enter it here to manage your slots.
           </p>
           <form onSubmit={handleBaristaGo} style={{ width: '100%' }}>
             <input
@@ -65,7 +65,7 @@ export default function LandingPage() {
             />
             {baristaError && <span className="form-error">{baristaError}</span>}
             <button className="landing-card-btn landing-card-btn-secondary" type="submit">
-              Open Barista Dashboard →
+              Open Host Dashboard →
             </button>
           </form>
         </div>

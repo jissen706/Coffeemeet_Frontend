@@ -18,7 +18,7 @@ function BaristaLogin({ joinCode, onLogin }) {
       return;
     }
     if (!joinCode) {
-      setError('No join code — use the barista link from your café owner');
+      setError('No join code — use the host link from your admin');
       return;
     }
 
@@ -42,7 +42,7 @@ function BaristaLogin({ joinCode, onLogin }) {
       <div className="barista-login-card">
         <div className="barista-login-header">
           <span className="barista-login-icon">☕</span>
-          <h1 className="barista-login-title">Barista Dashboard</h1>
+          <h1 className="barista-login-title">Host Dashboard</h1>
           {joinCode && (
             <div className="barista-login-code">
               Join code: <strong>{joinCode}</strong>
@@ -52,7 +52,7 @@ function BaristaLogin({ joinCode, onLogin }) {
 
         <form className="barista-login-form" onSubmit={handleSubmit}>
           <p className="barista-login-hint">
-            Enter your name and email to sign in or register as a barista for this café.
+            Enter your name and email to sign in or register as a host for this café.
           </p>
 
           <div className="form-field">

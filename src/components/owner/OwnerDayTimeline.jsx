@@ -72,7 +72,7 @@ export default function OwnerDayTimeline({ date, slots, token, onClose, onSlotDe
         {detailSlot && (
           <div className="tl-detail-card">
             <div className="tl-detail-row">
-              <span className="tl-detail-label">Barista</span>
+              <span className="tl-detail-label">Host</span>
               <span className="tl-detail-val">{detailSlot.barista.name}</span>
             </div>
             <div className="tl-detail-row">
@@ -84,7 +84,7 @@ export default function OwnerDayTimeline({ date, slots, token, onClose, onSlotDe
               <span className="tl-detail-val">{detailSlot.location || '—'}</span>
             </div>
             <div className="tl-detail-row">
-              <span className="tl-detail-label">Customer</span>
+              <span className="tl-detail-label">Participant</span>
               <span className="tl-detail-val">{detailSlot.customer ? detailSlot.customer.name : <em>Open</em>}</span>
             </div>
             <div className="tl-detail-owner-actions">

@@ -57,7 +57,7 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
           <span className="owner-dash-icon">☕</span>
           <div>
             <div className="owner-dash-welcome">Welcome back, {owner.name.split(' ')[0]}!</div>
-            <div className="owner-dash-sub">CoffeeMeet Owner Portal</div>
+            <div className="owner-dash-sub">CoffeeMeet Admin Portal</div>
           </div>
         </div>
         <div className="owner-dash-actions">
