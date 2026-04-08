@@ -18,6 +18,10 @@ export default function OwnerLogin({ onLogin }) {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+    if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
+      setError('Enter a valid email address');
+      return;
+    }
     setLoading(true);
     try {
       if (mode === 'register') {

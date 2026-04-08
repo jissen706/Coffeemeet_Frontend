@@ -13,7 +13,7 @@ function BaristaLogin({ joinCode, onLogin }) {
     setError('');
 
     if (!name.trim()) { setError('Enter your name'); return; }
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
       setError('Enter a valid email address');
       return;
     }

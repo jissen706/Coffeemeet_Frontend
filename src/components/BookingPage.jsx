@@ -38,7 +38,7 @@ function BookingPage({ slot, onConfirm, onBack }) {
     if (!form.firstName.trim()) errs.firstName = 'Required';
     if (!form.lastName.trim())  errs.lastName  = 'Required';
     if (!form.email.trim())     errs.email     = 'Required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'Enter a valid email';
+    else if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(form.email)) errs.email = 'Enter a valid email address';
 
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
