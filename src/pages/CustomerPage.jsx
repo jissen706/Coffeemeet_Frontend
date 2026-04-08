@@ -38,6 +38,8 @@ function CustomerPage() {
     () => sessionStorage.getItem('customer_token')
   );
 
+  const [showCancelWidget, setShowCancelWidget] = useState(false);
+
   // "Already booked?" return flow
   const [showReturnForm, setShowReturnForm] = useState(false);
   const [returnName, setReturnName] = useState('');
@@ -302,6 +304,55 @@ function CustomerPage() {
       )}
       {view === 'celebration' && activeSlot && (
         <CelebrationOverlay slot={activeSlot} onDone={handleCelebrationDone} />
+      )}
+
+      {/* Floating "Your Booking" widget — bottom-left corner */}
+      {myBookedSlot && view === 'main' && (
+        <div className="booking-widget">
+          <div className="bw-glow"/>
+          <div className="bw-header">
+            <span className="bw-star">★</span>
+            <span className="bw-title">Your Booking</span>
+            <button className="bw-cancel-btn" onClick={() => setShowCancelWidget(true)} title="Cancel booking">✕</button>
+          </div>
+          <div className="bw-row">
+            <span className="bw-label">Date</span>
+            <span className="bw-val">{new Date(myBookedSlot.start_time).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</span>
+          </div>
+          <div className="bw-row">
+            <span className="bw-label">Time</span>
+            <span className="bw-val">{new Date(myBookedSlot.start_time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} – {new Date(myBookedSlot.end_time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+          </div>
+          <div className="bw-row">
+            <span className="bw-label">Host</span>
+            <span className="bw-val">{myBookedSlot.barista.name}</span>
+          </div>
+          <div className="bw-row">
+            <span className="bw-label">Location</span>
+            <span className="bw-val">{myBookedSlot.location || '—'}</span>
+          </div>
+          {myBookedSlot.meet_link && (
+            <a href={myBookedSlot.meet_link} target="_blank" rel="noopener noreferrer" className="bw-join-btn">
+              Join Meeting ↗
+            </a>
+          )}
+        </div>
+      )}
+
+      {/* Cancel confirmation from widget */}
+      {showCancelWidget && myBookedSlot && (
+        <div className="tl-confirm-backdrop">
+          <div className="tl-confirm-popup">
+            <div className="tl-confirm-title">Cancel your booking?</div>
+            <div className="tl-confirm-sub">
+              {new Date(myBookedSlot.start_time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} – {new Date(myBookedSlot.end_time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} with {myBookedSlot.barista.name.split(' ')[0]}
+            </div>
+            <div className="tl-confirm-actions">
+              <button className="tl-confirm-cancel" onClick={() => setShowCancelWidget(false)}>Keep it</button>
+              <button className="tl-confirm-ok tl-confirm-delete" onClick={async () => { setShowCancelWidget(false); await handleCancelBooking(myBookedSlot.id); }}>Cancel booking</button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

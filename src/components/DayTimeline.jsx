@@ -149,37 +149,6 @@ export default function DayTimeline({ date, slots, onClose, onBook, myBookedSlot
           </div>
         )}
 
-        {/* Persistent "Your Booking" widget pinned at bottom */}
-        {myBookedSlot && (
-          <div className="tl-my-booking-widget">
-            <div className="tl-mbw-header">
-              <span>★ Your Booking</span>
-              <button className="tl-mbw-cancel-btn" onClick={() => setCancelTarget(myBookedSlot)}>✕ Cancel</button>
-            </div>
-            <div className="tl-mbw-row">
-              <span className="tl-mbw-label">Date</span>
-              <span>{fmtDate(myBookedSlot.start_time)}</span>
-            </div>
-            <div className="tl-mbw-row">
-              <span className="tl-mbw-label">Time</span>
-              <span>{fmtTime(myBookedSlot.start_time)} – {fmtTime(myBookedSlot.end_time)}</span>
-            </div>
-            <div className="tl-mbw-row">
-              <span className="tl-mbw-label">Host</span>
-              <span>{myBookedSlot.barista.name}</span>
-            </div>
-            <div className="tl-mbw-row">
-              <span className="tl-mbw-label">Location</span>
-              <span>{myBookedSlot.location || '—'}</span>
-            </div>
-            {myBookedSlot.meet_link && (
-              <div className="tl-mbw-row">
-                <span className="tl-mbw-label">Link</span>
-                <a href={myBookedSlot.meet_link} target="_blank" rel="noopener noreferrer" className="tl-mbw-link">Join meeting ↗</a>
-              </div>
-            )}
-          </div>
-        )}
       </aside>
 
       {/* Cancel confirmation */}
