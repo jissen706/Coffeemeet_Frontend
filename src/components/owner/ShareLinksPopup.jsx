@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 export default function ShareLinksPopup({ cafe, onClose }) {
   const origin = window.location.origin;
-  const customerLink = `${origin}/cafe/${cafe.join_code}`;
+  const customerLink = `${origin}/cafe/${cafe.participant_code}`;
   const baristaLink  = `${origin}/barista?code=${cafe.join_code}`;
 
   const [copiedCustomer, setCopiedCustomer] = useState(false);
@@ -20,7 +20,9 @@ export default function ShareLinksPopup({ cafe, onClose }) {
       <div className="share-popup" onClick={e => e.stopPropagation()}>
         <div className="share-header">
           <div className="share-title">Share Your Cafe</div>
-          <div className="share-sub">{cafe.name} · Join code: <strong>{cafe.join_code}</strong></div>
+          <div className="share-sub">
+            {cafe.name} · Host code: <strong>{cafe.join_code}</strong> · Participant code: <strong>{cafe.participant_code}</strong>
+          </div>
         </div>
 
         <div className="share-links">
