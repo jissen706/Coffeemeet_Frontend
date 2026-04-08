@@ -58,6 +58,17 @@ function CustomerPage() {
       .then(([slotsData, baristasData]) => {
         setSlots(slotsData);
         setBaristas(baristasData.map((b) => ({ ...b, expertise: getExpertise(b.id) })));
+
+        // Restore booked date highlight from persisted slot id
+        const persistedSlotId = sessionStorage.getItem('my_booked_slot_id');
+        if (persistedSlotId) {
+          const bookedSlot = slotsData.find(s => s.id === Number(persistedSlotId));
+          if (bookedSlot) {
+            const date = new Date(bookedSlot.start_time).toLocaleDateString('en-CA');
+            setMyBookedDates(new Set([date]));
+          }
+        }
+
         setLoading(false);
       })
       .catch((err) => {
