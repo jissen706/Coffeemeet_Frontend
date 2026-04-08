@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import BaristaTimeRangePicker from './BaristaTimeRangePicker';
-import { deleteSlot } from '../../api';
+import { deleteSlot, editSlot } from '../../api';
 
 const HOUR_START=8,HOUR_END=22,HOURS=14,HOUR_H=80,PX_MIN=HOUR_H/60;
 const COLORS=['#8b4513','#1a7a40','#2980b9','#7b4f9e','#c8773a','#c0392b','#2c7873'];
@@ -21,6 +21,11 @@ export default function BaristaDayTimeline({ date, slots, barista, token, startD
   const [showPicker, setShowPicker]     = useState(false);
   const [detailSlot, setDetailSlot]     = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [editTarget,  setEditTarget]    = useState(null); // slot being edited
+  const [editLocation, setEditLocation] = useState('');
+  const [editMeetLink, setEditMeetLink] = useState('');
+  const [editSaving,   setEditSaving]   = useState(false);
+  const [editError,    setEditError]    = useState('');
   const formatted = new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
   const ownSlots  = slots.filter(s=>s.barista.id===barista.id);
   const inRange   = (!startDate || date >= startDate) && (!endDate || date <= endDate);
@@ -28,6 +33,29 @@ export default function BaristaDayTimeline({ date, slots, barista, token, startD
   const laid      = useMemo(()=>layoutSlots(slots),[slots]);
 
   function handlePickerConfirm(newSlots){ newSlots.forEach(s=>onSlotCreated(s)); setShowPicker(false); }
+
+  function openEdit(slot) {
+    setEditTarget(slot);
+    setEditLocation(slot.location || '');
+    setEditMeetLink(slot.meet_link || '');
+    setEditError('');
+  }
+
+  async function handleEditSave() {
+    setEditSaving(true);
+    setEditError('');
+    try {
+      const updated = await editSlot(editTarget.id, { location: editLocation, meet_link: editMeetLink || null }, token);
+      onSlotCreated(updated); // reuse to update parent slots list
+      onSlotDeleted(editTarget.id); // remove old version
+      if (detailSlot?.id === editTarget.id) setDetailSlot(updated);
+      setEditTarget(null);
+    } catch (err) {
+      setEditError(err.message || 'Failed to save');
+    } finally {
+      setEditSaving(false);
+    }
+  }
 
   async function handleDeleteConfirm() {
     // Optimistic update
@@ -89,11 +117,18 @@ export default function BaristaDayTimeline({ date, slots, barista, token, startD
                     <div className="tl-slot-name">{isOwn?'You':slot.barista.name.split(' ')[0]}</div>
                     {h>=38&&<div className="tl-slot-time">{fmtTime(slot.start_time)}–{fmtTime(slot.end_time)}</div>}
                     {isOwn&&(
-                      <button
-                        className="tl-slot-delete-btn"
-                        title="Delete slot"
-                        onClick={(e)=>{e.stopPropagation();setDeleteTarget(slot);}}
-                      >✕</button>
+                      <>
+                        <button
+                          className="tl-slot-delete-btn"
+                          title="Delete slot"
+                          onClick={(e)=>{e.stopPropagation();setDeleteTarget(slot);}}
+                        >✕</button>
+                        <button
+                          className="tl-slot-edit-btn"
+                          title="Edit slot"
+                          onClick={(e)=>{e.stopPropagation();openEdit(slot);}}
+                        >✎</button>
+                      </>
                     )}
                   </div>
                 );
@@ -122,6 +157,44 @@ export default function BaristaDayTimeline({ date, slots, barista, token, startD
 
       {showPicker&&(
         <BaristaTimeRangePicker date={date} existingSlots={slots} barista={barista} token={token} onConfirm={handlePickerConfirm} onCancel={()=>setShowPicker(false)}/>
+      )}
+
+      {editTarget&&(
+        <div className="tl-confirm-backdrop">
+          <div className="tl-confirm-popup" style={{width:320}}>
+            <div className="tl-confirm-title">Edit Slot</div>
+            <div className="tl-confirm-sub" style={{marginBottom:12}}>
+              {fmtTime(editTarget.start_time)}–{fmtTime(editTarget.end_time)}
+            </div>
+            <div className="form-field" style={{marginBottom:8}}>
+              <label className="form-label">Location</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder="e.g. Table 3, Corner Booth"
+                value={editLocation}
+                onChange={e=>setEditLocation(e.target.value)}
+              />
+            </div>
+            <div className="form-field" style={{marginBottom:8}}>
+              <label className="form-label">Meet Link <span style={{color:'#aaa',fontWeight:400}}>(optional)</span></label>
+              <input
+                className="form-input"
+                type="url"
+                placeholder="https://zoom.us/j/..."
+                value={editMeetLink}
+                onChange={e=>setEditMeetLink(e.target.value)}
+              />
+            </div>
+            {editError&&<div className="form-error" style={{marginBottom:8}}>{editError}</div>}
+            <div className="tl-confirm-actions">
+              <button className="tl-confirm-cancel" onClick={()=>setEditTarget(null)} disabled={editSaving}>Cancel</button>
+              <button className="tl-confirm-ok" onClick={handleEditSave} disabled={editSaving}>
+                {editSaving?'Saving…':'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

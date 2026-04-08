@@ -60,6 +60,16 @@ export async function createSlot(cafeId, slotData, token) {
   return res.json();
 }
 
+export async function editSlot(slotId, { location, meet_link }, token) {
+  const res = await fetch(`${BASE_URL}/slots/${slotId}/edit`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ location, meet_link }),
+  });
+  if (!res.ok) throw new Error(`Failed to update slot (${res.status})`);
+  return res.json();
+}
+
 export async function deleteSlot(slotId, token) {
   const res = await fetch(`${BASE_URL}/slots/${slotId}`, {
     method: 'DELETE',
