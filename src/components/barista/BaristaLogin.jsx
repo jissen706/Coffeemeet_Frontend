@@ -5,6 +5,7 @@ function BaristaLogin({ joinCode, onLogin }) {
   const [name,     setName]     = useState('');
   const [email,    setEmail]    = useState('');
   const [phone,    setPhone]    = useState('');
+  const [bio,      setBio]      = useState('');
   const [error,    setError]    = useState('');
   const [loading,  setLoading]  = useState(false);
 
@@ -28,6 +29,7 @@ function BaristaLogin({ joinCode, onLogin }) {
         name: name.trim(),
         email: email.trim(),
         phone: phone.trim() || null,
+        bio: bio.trim() || null,
       });
       onLogin(barista);
     } catch (err) {
@@ -88,6 +90,20 @@ function BaristaLogin({ joinCode, onLogin }) {
               placeholder="555-1234"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label">
+              Short Bio <span className="form-label-optional">(optional — visible to participants)</span>
+            </label>
+            <textarea
+              className="form-input"
+              placeholder="e.g. PhD student in CS, happy to chat about research, grad school, or career paths."
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              rows={3}
+              style={{ resize: 'vertical', minHeight: 72 }}
             />
           </div>
 

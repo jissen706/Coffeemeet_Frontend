@@ -29,11 +29,11 @@ export async function getCafeBaristas(cafeId) {
 // ── Barista API ───────────────────────────────────────────────────────────────
 
 // POST /baristas — handles both register and login (if email already exists in cafe)
-export async function registerBarista(joinCode, { name, email, phone }) {
+export async function registerBarista(joinCode, { name, email, phone, bio }) {
   const res = await fetch(`${BASE_URL}/baristas`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, phone_number: phone || null, join_code: joinCode }),
+    body: JSON.stringify({ name, email, phone_number: phone || null, bio: bio || null, join_code: joinCode }),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -47,6 +47,7 @@ export async function registerBarista(joinCode, { name, email, phone }) {
     cafe_id: data.user.cafe_id,
     token: data.access_token,
     email,
+    bio: data.user.bio || null,
   };
 }
 

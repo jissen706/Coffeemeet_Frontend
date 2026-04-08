@@ -313,18 +313,46 @@ body {
   line-height: 1.2;
 }
 
-.barista-expertise {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(200, 119, 58, 0.15);
-  color: #e8a050;
-  border: 1px solid rgba(200, 119, 58, 0.3);
-  padding: 3px 9px;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 600;
+.barista-bio-short {
+  font-size: 0.75rem;
+  color: var(--text-sidebar-muted);
+  line-height: 1.5;
   margin-bottom: 8px;
+  font-style: italic;
+}
+
+.barista-bio-empty {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.2);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+/* Full bio popup — appears to the right of the card on hover */
+.barista-bio-popup {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 0;
+  width: 220px;
+  background: #2a1506;
+  border: 1px solid rgba(200,119,58,0.45);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  z-index: 50;
+  pointer-events: none;
+}
+.barista-bio-popup-name {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #e8a050;
+  margin-bottom: 6px;
+}
+.barista-bio-popup-text {
+  font-size: 0.77rem;
+  color: var(--text-sidebar-muted);
+  line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 .barista-contact {
