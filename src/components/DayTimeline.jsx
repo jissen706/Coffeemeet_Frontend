@@ -4,6 +4,7 @@ const HOUR_START = 8, HOUR_END = 22, HOURS = 14, HOUR_H = 80, PX_MIN = HOUR_H / 
 const COLORS = ['#8b4513','#1a7a40','#2980b9','#7b4f9e','#c8773a','#c0392b','#2c7873'];
 const colorOf  = (id) => COLORS[id % COLORS.length];
 const fmtTime  = (dt) => new Date(dt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+const fmtDate  = (dt) => new Date(dt).toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
 const topOf    = (s)  => { const d=new Date(s.start_time); return (d.getHours()*60+d.getMinutes()-HOUR_START*60)*PX_MIN; };
 const heightOf = (s)  => Math.max(24,(new Date(s.end_time)-new Date(s.start_time))/60000*PX_MIN);
 
@@ -22,7 +23,7 @@ function layoutSlots(slots) {
   return rows.map(({slot,col})=>({slot,col,n}));
 }
 
-export default function DayTimeline({ date, slots, onClose, onBook, myBookedSlotId, onCancelBooking }) {
+export default function DayTimeline({ date, slots, onClose, onBook, myBookedSlotId, myBookedSlot, onCancelBooking }) {
   const [cancelTarget, setCancelTarget] = useState(null);
   const [alreadyBookedMsg, setAlreadyBookedMsg] = useState(false);
 
@@ -145,6 +146,38 @@ export default function DayTimeline({ date, slots, onClose, onBook, myBookedSlot
                 })}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Persistent "Your Booking" widget pinned at bottom */}
+        {myBookedSlot && (
+          <div className="tl-my-booking-widget">
+            <div className="tl-mbw-header">
+              <span>★ Your Booking</span>
+              <button className="tl-mbw-cancel-btn" onClick={() => setCancelTarget(myBookedSlot)}>✕ Cancel</button>
+            </div>
+            <div className="tl-mbw-row">
+              <span className="tl-mbw-label">Date</span>
+              <span>{fmtDate(myBookedSlot.start_time)}</span>
+            </div>
+            <div className="tl-mbw-row">
+              <span className="tl-mbw-label">Time</span>
+              <span>{fmtTime(myBookedSlot.start_time)} – {fmtTime(myBookedSlot.end_time)}</span>
+            </div>
+            <div className="tl-mbw-row">
+              <span className="tl-mbw-label">Host</span>
+              <span>{myBookedSlot.barista.name}</span>
+            </div>
+            <div className="tl-mbw-row">
+              <span className="tl-mbw-label">Location</span>
+              <span>{myBookedSlot.location || '—'}</span>
+            </div>
+            {myBookedSlot.meet_link && (
+              <div className="tl-mbw-row">
+                <span className="tl-mbw-label">Link</span>
+                <a href={myBookedSlot.meet_link} target="_blank" rel="noopener noreferrer" className="tl-mbw-link">Join meeting ↗</a>
+              </div>
+            )}
           </div>
         )}
       </aside>

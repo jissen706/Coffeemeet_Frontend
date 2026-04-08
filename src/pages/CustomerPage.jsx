@@ -59,13 +59,14 @@ function CustomerPage() {
         setSlots(slotsData);
         setBaristas(baristasData.map((b) => ({ ...b, expertise: getExpertise(b.id) })));
 
-        // Restore booked date highlight from persisted slot id
+        // Restore booked date highlight from persisted slot id and auto-open panel
         const persistedSlotId = sessionStorage.getItem('my_booked_slot_id');
         if (persistedSlotId) {
           const bookedSlot = slotsData.find(s => s.id === Number(persistedSlotId));
           if (bookedSlot) {
             const date = new Date(bookedSlot.start_time).toLocaleDateString('en-CA');
             setMyBookedDates(new Set([date]));
+            setSelectedDate(date);
           }
         }
 
@@ -76,6 +77,11 @@ function CustomerPage() {
         setLoading(false);
       });
   }, [joinCode]);
+
+  const myBookedSlot = useMemo(
+    () => (myBookedSlotId ? slots.find(s => s.id === myBookedSlotId) ?? null : null),
+    [slots, myBookedSlotId]
+  );
 
   const slotsByDate = useMemo(() => {
     const map = {};
@@ -232,6 +238,7 @@ function CustomerPage() {
               onClose={() => setSelectedDate(null)}
               onBook={handleBookSlot}
               myBookedSlotId={myBookedSlotId}
+              myBookedSlot={myBookedSlot}
               onCancelBooking={handleCancelBooking}
             />
           )}

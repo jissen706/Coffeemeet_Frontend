@@ -1653,7 +1653,7 @@ body {
   font-size: 0.82rem;
 }
 
-.tl-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; }
+.tl-scroll { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
 
 .tl-body {
   position: relative;
@@ -1802,6 +1802,55 @@ body {
   color: #7a5c00;
   flex-shrink: 0;
 }
+
+/* ---- Your Booking Widget (pinned at bottom of timeline panel) ---- */
+.tl-my-booking-widget {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #c8773a 0%, #a85e28 100%);
+  border-top: 2px solid #b8860b;
+  padding: 12px 16px 14px;
+  color: #fff;
+}
+.tl-mbw-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin-bottom: 9px;
+}
+.tl-mbw-cancel-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: #fff;
+  border-radius: 4px;
+  padding: 3px 9px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.tl-mbw-cancel-btn:hover { background: rgba(192,57,43,0.65); }
+.tl-mbw-row {
+  display: flex;
+  gap: 8px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+.tl-mbw-label {
+  font-weight: 700;
+  opacity: 0.72;
+  min-width: 54px;
+  flex-shrink: 0;
+}
+.tl-mbw-link {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+  word-break: break-all;
+}
+.tl-mbw-link:hover { opacity: 0.85; }
 
 /* Confirmation popup */
 .tl-confirm-backdrop {
