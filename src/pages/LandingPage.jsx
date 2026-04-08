@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getCafeByCode } from '../api';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -7,19 +8,37 @@ export default function LandingPage() {
   const [customerCode, setCustomerCode] = useState('');
   const [baristaError, setBaristaError] = useState('');
   const [customerError, setCustomerError] = useState('');
+  const [baristaLoading, setBaristaLoading] = useState(false);
+  const [customerLoading, setCustomerLoading] = useState(false);
 
-  function handleBaristaGo(e) {
+  async function handleBaristaGo(e) {
     e.preventDefault();
     const code = baristaCode.trim();
     if (!code) { setBaristaError('Enter a join code'); return; }
-    navigate(`/barista?code=${encodeURIComponent(code)}`);
+    setBaristaLoading(true);
+    try {
+      await getCafeByCode(code);
+      navigate(`/barista?code=${encodeURIComponent(code)}`);
+    } catch {
+      setBaristaError('Invalid join code — check with your admin');
+    } finally {
+      setBaristaLoading(false);
+    }
   }
 
-  function handleCustomerGo(e) {
+  async function handleCustomerGo(e) {
     e.preventDefault();
     const code = customerCode.trim();
     if (!code) { setCustomerError('Enter a join code'); return; }
-    navigate(`/cafe/${encodeURIComponent(code)}`);
+    setCustomerLoading(true);
+    try {
+      await getCafeByCode(code);
+      navigate(`/cafe/${encodeURIComponent(code)}`);
+    } catch {
+      setCustomerError('Invalid join code — check with your admin');
+    } finally {
+      setCustomerLoading(false);
+    }
   }
 
   return (
@@ -64,8 +83,8 @@ export default function LandingPage() {
               onChange={(e) => { setBaristaCode(e.target.value.toUpperCase()); setBaristaError(''); }}
             />
             {baristaError && <span className="form-error">{baristaError}</span>}
-            <button className="landing-card-btn landing-card-btn-secondary" type="submit">
-              Open Host Dashboard →
+            <button className="landing-card-btn landing-card-btn-secondary" type="submit" disabled={baristaLoading}>
+              {baristaLoading ? 'Checking…' : 'Open Host Dashboard →'}
             </button>
           </form>
         </div>
@@ -86,8 +105,8 @@ export default function LandingPage() {
               onChange={(e) => { setCustomerCode(e.target.value.toUpperCase()); setCustomerError(''); }}
             />
             {customerError && <span className="form-error">{customerError}</span>}
-            <button className="landing-card-btn landing-card-btn-secondary" type="submit">
-              View Available Slots →
+            <button className="landing-card-btn landing-card-btn-secondary" type="submit" disabled={customerLoading}>
+              {customerLoading ? 'Checking…' : 'View Available Slots →'}
             </button>
           </form>
         </div>
