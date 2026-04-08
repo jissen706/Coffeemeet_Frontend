@@ -55,7 +55,11 @@ function BaristaDashboard() {
   }, [slots]);
 
   function handleSlotCreated(newSlot) {
-    setSlots((prev) => [...prev, newSlot]);
+    setSlots((prev) => {
+      const exists = prev.some(s => s.id === newSlot.id);
+      if (exists) return prev.map(s => s.id === newSlot.id ? newSlot : s);
+      return [...prev, newSlot];
+    });
   }
 
   function handleSlotDeleted(slotId) {

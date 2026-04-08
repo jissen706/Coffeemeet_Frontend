@@ -46,8 +46,7 @@ export default function BaristaDayTimeline({ date, slots, barista, token, startD
     setEditError('');
     try {
       const updated = await editSlot(editTarget.id, { location: editLocation, meet_link: editMeetLink || null }, token);
-      onSlotCreated(updated); // reuse to update parent slots list
-      onSlotDeleted(editTarget.id); // remove old version
+      onSlotCreated(updated); // upsert: parent replaces existing slot by id
       if (detailSlot?.id === editTarget.id) setDetailSlot(updated);
       setEditTarget(null);
     } catch (err) {
@@ -190,7 +189,12 @@ export default function BaristaDayTimeline({ date, slots, barista, token, startD
             {editError&&<div className="form-error" style={{marginBottom:8}}>{editError}</div>}
             <div className="tl-confirm-actions">
               <button className="tl-confirm-cancel" onClick={()=>setEditTarget(null)} disabled={editSaving}>Cancel</button>
-              <button className="tl-confirm-ok" onClick={handleEditSave} disabled={editSaving}>
+              <button
+                className="tl-confirm-ok"
+                onClick={handleEditSave}
+                disabled={editSaving || !editLocation.trim()}
+                style={editLocation.trim() ? {background:'#c8773a',borderColor:'#c8773a',color:'#fff'} : {}}
+              >
                 {editSaving?'Saving…':'Save'}
               </button>
             </div>
