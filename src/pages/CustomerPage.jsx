@@ -313,7 +313,7 @@ function CustomerPage() {
           <div className="bw-header">
             <span className="bw-star">★</span>
             <span className="bw-title">Your Booking</span>
-            <button className="bw-cancel-btn" onClick={() => setShowCancelWidget(true)} title="Cancel booking">✕</button>
+            <button className="bw-cancel-btn" onClick={() => setShowCancelWidget(true)}>Cancel</button>
           </div>
           <div className="bw-row">
             <span className="bw-label">Date</span>
