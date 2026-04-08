@@ -121,6 +121,134 @@ body {
   margin-top: 2px;
 }
 
+/* ---- Host Booked Slots Sidebar ---- */
+.host-slots-sidebar {
+  width: 272px;
+  min-width: 272px;
+  background: var(--sidebar-bg);
+  padding: 20px 12px 24px;
+  overflow-y: auto;
+  border-right: 1px solid #0a0503;
+  display: flex;
+  flex-direction: column;
+}
+
+.hss-empty {
+  color: var(--text-sidebar-muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  padding: 8px;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.hss-card {
+  background: var(--sidebar-surface);
+  border-radius: 14px;
+  padding: 12px 13px 11px;
+  margin-bottom: 10px;
+  border: 1px solid #3d2314;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.hss-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 10px rgba(200,119,58,0.18);
+}
+
+.hss-card-date {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+.hss-card-time {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-sidebar);
+  margin-bottom: 8px;
+}
+
+.hss-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+  margin-bottom: 8px;
+}
+
+.hss-row {
+  display: flex;
+  gap: 6px;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  align-items: baseline;
+}
+.hss-label {
+  font-weight: 700;
+  color: var(--text-sidebar-muted);
+  min-width: 58px;
+  flex-shrink: 0;
+}
+.hss-val {
+  color: var(--text-sidebar);
+  word-break: break-word;
+}
+.hss-email {
+  color: #7eb8e8;
+  font-size: 0.72rem;
+  word-break: break-all;
+  text-decoration: none;
+}
+.hss-email:hover { text-decoration: underline; }
+
+.hss-join-btn {
+  display: block;
+  margin-top: 9px;
+  background: rgba(200,119,58,0.15);
+  border: 1px solid rgba(200,119,58,0.4);
+  border-radius: 9px;
+  color: #e8a050;
+  font-size: 0.73rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 5px 10px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.hss-join-btn:hover { background: rgba(200,119,58,0.28); }
+
+.hss-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.hss-edit-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid rgba(200,119,58,0.45);
+  color: #e8a050;
+  border-radius: 8px;
+  padding: 5px 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.hss-edit-btn:hover { background: rgba(200,119,58,0.15); }
+.hss-unbook-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid rgba(192,57,43,0.5);
+  color: #e07060;
+  border-radius: 8px;
+  padding: 5px 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.hss-unbook-btn:hover { background: rgba(192,57,43,0.18); }
+
 /* ---- Sidebar ---- */
 .barista-sidebar {
   width: 272px;

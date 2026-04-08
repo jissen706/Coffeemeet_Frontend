@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Header from '../components/Header';
-import BaristaSidebar from '../components/BaristaSidebar';
+import HostSlotsSidebar from '../components/barista/HostSlotsSidebar';
 import BaristaLogin from '../components/barista/BaristaLogin';
 import BaristaCalendarGrid from '../components/barista/BaristaCalendarGrid';
 import BaristaDayTimeline from '../components/barista/BaristaDayTimeline';
@@ -87,7 +87,13 @@ function BaristaDashboard() {
         ownerName={`Host: ${barista.name}`}
       />
       <div className="main-layout">
-        <BaristaSidebar baristas={allBaristas} />
+        <HostSlotsSidebar
+          slots={slots}
+          barista={barista}
+          token={barista.token}
+          onSlotUpdated={handleSlotCreated}
+          onSlotUnbooked={handleSlotCreated}
+        />
         <BaristaCalendarGrid
           slots={slots}
           startDate={cafe?.start_date}
