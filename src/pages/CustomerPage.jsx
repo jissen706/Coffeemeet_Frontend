@@ -31,10 +31,19 @@ function CustomerPage() {
   const [view, setView] = useState('main');
   const [activeSlot, setActiveSlot] = useState(null);
   const [myBookedDates, setMyBookedDates] = useState(new Set());
-  const [myBookedSlotId, setMyBookedSlotId] = useState(null);
+  const [myBookedSlotId, setMyBookedSlotId] = useState(
+    () => { const v = sessionStorage.getItem('my_booked_slot_id'); return v ? Number(v) : null; }
+  );
   const [customerToken, setCustomerToken] = useState(
     () => sessionStorage.getItem('customer_token')
   );
+
+  // "Already booked?" return flow
+  const [showReturnForm, setShowReturnForm] = useState(false);
+  const [returnName, setReturnName] = useState('');
+  const [returnEmail, setReturnEmail] = useState('');
+  const [returnError, setReturnError] = useState('');
+  const [returnLoading, setReturnLoading] = useState(false);
 
   useEffect(() => {
     if (!joinCode) { setError('No join code in URL'); setLoading(false); return; }
@@ -80,33 +89,80 @@ function CustomerPage() {
   async function handleBookingConfirm(customerData) {
     const name = `${customerData.first_name} ${customerData.last_name}`.trim();
     const email = customerData.email.trim();
-    // createCustomer is an upsert — works for both new and returning customers
     const customer = await createCustomer(cafe.id, { name, email });
 
-    // Book the slot
-    const updatedSlot = await bookSlot(activeSlot.id, customer.user.id);
+    // Check if they already have a booking in this cafe
+    const existingSlot = slots.find(s => s.customer?.id === customer.user.id);
+    if (existingSlot) {
+      // Restore their session and show them their booking
+      setCustomerToken(customer.access_token);
+      sessionStorage.setItem('customer_token', customer.access_token);
+      setMyBookedSlotId(existingSlot.id);
+      sessionStorage.setItem('my_booked_slot_id', String(existingSlot.id));
+      const date = new Date(existingSlot.start_time).toLocaleDateString('en-CA');
+      setMyBookedDates(new Set([date]));
+      setSelectedDate(date);
+      setView('main');
+      return;
+    }
 
-    // Store token for cancellation (survives page refresh)
+    // New booking
+    const updatedSlot = await bookSlot(activeSlot.id, customer.user.id);
     setCustomerToken(customer.access_token);
     sessionStorage.setItem('customer_token', customer.access_token);
-
-    // Update slots state with the booked slot
     setSlots((prev) => prev.map((s) => s.id === activeSlot.id ? updatedSlot : s));
-
     const date = new Date(activeSlot.start_time).toLocaleDateString('en-CA');
     setMyBookedDates((prev) => new Set([...prev, date]));
     setMyBookedSlotId(activeSlot.id);
+    sessionStorage.setItem('my_booked_slot_id', String(activeSlot.id));
     setSelectedDate(null);
     setView('celebration');
   }
 
+  async function handleReturnLogin() {
+    if (!returnName.trim() || !returnEmail.trim()) { setReturnError('Enter your name and email'); return; }
+    setReturnLoading(true);
+    setReturnError('');
+    try {
+      const customer = await createCustomer(cafe.id, { name: returnName.trim(), email: returnEmail.trim() });
+      const bookedSlot = slots.find(s => s.customer?.id === customer.user.id);
+      if (!bookedSlot) {
+        setReturnError('No booking found for that email in this café.');
+        return;
+      }
+      setCustomerToken(customer.access_token);
+      sessionStorage.setItem('customer_token', customer.access_token);
+      setMyBookedSlotId(bookedSlot.id);
+      sessionStorage.setItem('my_booked_slot_id', String(bookedSlot.id));
+      const date = new Date(bookedSlot.start_time).toLocaleDateString('en-CA');
+      setMyBookedDates(new Set([date]));
+      setSelectedDate(date);
+      setShowReturnForm(false);
+    } catch (err) {
+      setReturnError(err.message || 'Could not find your booking');
+    } finally {
+      setReturnLoading(false);
+    }
+  }
+
   async function handleCancelBooking(slotId) {
-    if (!customerToken) return;
+    if (!customerToken) {
+      // Token missing — prompt them to re-identify
+      setShowReturnForm(true);
+      return;
+    }
     try {
       const updatedSlot = await cancelBooking(slotId, customerToken);
       setSlots((prev) => prev.map((s) => s.id === slotId ? updatedSlot : s));
-    } catch {
-      // Optimistic fallback
+    } catch (err) {
+      if (err.message?.includes('401') || err.message?.includes('403')) {
+        // Token expired — clear it and prompt re-login
+        sessionStorage.removeItem('customer_token');
+        setCustomerToken(null);
+        setShowReturnForm(true);
+        return;
+      }
+      // Optimistic fallback for other errors
       setSlots((prev) => prev.map((s) => s.id === slotId ? { ...s, customer: null } : s));
     }
     const cancelledSlot = slots.find((s) => s.id === slotId);
@@ -117,6 +173,7 @@ function CustomerPage() {
     setMyBookedSlotId(null);
     setCustomerToken(null);
     sessionStorage.removeItem('customer_token');
+    sessionStorage.removeItem('my_booked_slot_id');
   }
 
   function handleBookingBack() { setActiveSlot(null); setView('main'); }
@@ -169,6 +226,51 @@ function CustomerPage() {
           )}
         </div>
       </div>
+
+      {/* Already booked? banner — shown when no active session */}
+      {!myBookedSlotId && !showReturnForm && (
+        <div style={{ textAlign: 'center', padding: '8px 0 0' }}>
+          <button
+            onClick={() => setShowReturnForm(true)}
+            style={{ background: 'none', border: 'none', color: '#c8773a', fontSize: '0.85rem', cursor: 'pointer', textDecoration: 'underline' }}
+          >
+            Already made a booking? Click here to manage it
+          </button>
+        </div>
+      )}
+
+      {/* Return login modal */}
+      {showReturnForm && (
+        <div className="tl-confirm-backdrop">
+          <div className="tl-confirm-popup" style={{ width: 320 }}>
+            <div className="tl-confirm-title">Find your booking</div>
+            <div className="tl-confirm-sub" style={{ marginBottom: 12 }}>Enter the name and email you booked with</div>
+            <input
+              className="form-input"
+              type="text"
+              placeholder="Your name"
+              value={returnName}
+              onChange={e => { setReturnName(e.target.value); setReturnError(''); }}
+              style={{ marginBottom: 8 }}
+            />
+            <input
+              className="form-input"
+              type="email"
+              placeholder="Your email"
+              value={returnEmail}
+              onChange={e => { setReturnEmail(e.target.value); setReturnError(''); }}
+              style={{ marginBottom: 8 }}
+            />
+            {returnError && <div className="form-error" style={{ marginBottom: 8 }}>{returnError}</div>}
+            <div className="tl-confirm-actions">
+              <button className="tl-confirm-cancel" onClick={() => { setShowReturnForm(false); setReturnError(''); }}>Cancel</button>
+              <button className="tl-confirm-ok" onClick={handleReturnLogin} disabled={returnLoading}>
+                {returnLoading ? 'Looking…' : 'Find Booking'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {modalSlot && (
         <BookingModal slot={modalSlot} onConfirm={handleModalConfirm} onCancel={handleModalCancel} />
