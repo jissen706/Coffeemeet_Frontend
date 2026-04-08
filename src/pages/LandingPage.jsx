@@ -44,7 +44,17 @@ export default function LandingPage() {
   return (
     <div className="landing-page">
       <div className="landing-hero">
-        <div className="landing-logo">☕</div>
+        {/* Coffee cup SVG */}
+        <div className="landing-logo">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="24" width="36" height="28" rx="6" fill="#3d1a08" stroke="#c8773a" strokeWidth="2"/>
+            <path d="M44 30 Q54 30 54 38 Q54 46 44 46" stroke="#c8773a" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+            <rect x="12" y="50" width="28" height="4" rx="2" fill="#c8773a" opacity="0.6"/>
+            <path d="M22 18 Q22 12 26 12 Q26 6 30 6" stroke="#c8773a" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.7"/>
+            <path d="M30 18 Q30 13 33 13" stroke="#c8773a" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5"/>
+            <ellipse cx="26" cy="35" rx="8" ry="4" fill="#c8773a" opacity="0.18"/>
+          </svg>
+        </div>
         <h1 className="landing-title">CoffeeMeet</h1>
         <p className="landing-subtitle">
           The easiest way to schedule coffee chats for your organization.
@@ -52,9 +62,17 @@ export default function LandingPage() {
       </div>
 
       <div className="landing-cards">
-        {/* Owner */}
+        {/* Admin */}
         <div className="landing-card">
-          <div className="landing-card-icon">🏠</div>
+          <div className="landing-card-icon">
+            {/* Dashboard/grid icon */}
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="4" width="14" height="14" rx="3" fill="#c8773a" opacity="0.85"/>
+              <rect x="22" y="4" width="14" height="14" rx="3" fill="#c8773a" opacity="0.5"/>
+              <rect x="4" y="22" width="14" height="14" rx="3" fill="#c8773a" opacity="0.5"/>
+              <rect x="22" y="22" width="14" height="14" rx="3" fill="#c8773a" opacity="0.85"/>
+            </svg>
+          </div>
           <h2 className="landing-card-title">I'm an Admin</h2>
           <p className="landing-card-desc">
             Create a café, set availability, and share links with your hosts and participants.
@@ -67,9 +85,17 @@ export default function LandingPage() {
           </button>
         </div>
 
-        {/* Barista */}
+        {/* Host */}
         <div className="landing-card">
-          <div className="landing-card-icon">👋</div>
+          <div className="landing-card-icon">
+            {/* Person with clock/availability icon */}
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="16" cy="12" r="7" fill="#c8773a" opacity="0.85"/>
+              <path d="M2 34 C2 26 10 22 16 22 C19 22 22 23 24 25" stroke="#c8773a" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+              <circle cx="30" cy="30" r="8" fill="#3d1a08" stroke="#c8773a" strokeWidth="2"/>
+              <path d="M30 26 L30 30 L33 32" stroke="#c8773a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
           <h2 className="landing-card-title">I'm a Host</h2>
           <p className="landing-card-desc">
             Got a join code from your admin? Enter it here to manage your slots.
@@ -78,7 +104,7 @@ export default function LandingPage() {
             <input
               className={`form-input landing-code-input${baristaError ? ' form-input-error' : ''}`}
               type="text"
-              placeholder="Enter join code (e.g. DEMO01)"
+              placeholder="Enter host code (e.g. DEMO01)"
               value={baristaCode}
               onChange={(e) => { setBaristaCode(e.target.value.toUpperCase()); setBaristaError(''); }}
             />
@@ -89,9 +115,18 @@ export default function LandingPage() {
           </form>
         </div>
 
-        {/* Customer */}
+        {/* Participant */}
         <div className="landing-card">
-          <div className="landing-card-icon">📅</div>
+          <div className="landing-card-icon">
+            {/* Calendar with checkmark */}
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="8" width="32" height="28" rx="4" fill="#3d1a08" stroke="#c8773a" strokeWidth="2"/>
+              <rect x="4" y="8" width="32" height="10" rx="4" fill="#c8773a" opacity="0.7"/>
+              <line x1="13" y1="4" x2="13" y2="12" stroke="#c8773a" strokeWidth="2.5" strokeLinecap="round"/>
+              <line x1="27" y1="4" x2="27" y2="12" stroke="#c8773a" strokeWidth="2.5" strokeLinecap="round"/>
+              <path d="M13 26 L17 30 L27 22" stroke="#c8773a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
           <h2 className="landing-card-title">I'm booking a Coffee Chat</h2>
           <p className="landing-card-desc">
             Have a link or join code from your organization? Enter it here to see available slots.
@@ -100,7 +135,7 @@ export default function LandingPage() {
             <input
               className={`form-input landing-code-input${customerError ? ' form-input-error' : ''}`}
               type="text"
-              placeholder="Enter join code (e.g. DEMO01)"
+              placeholder="Enter participant code (e.g. DEMO01)"
               value={customerCode}
               onChange={(e) => { setCustomerCode(e.target.value.toUpperCase()); setCustomerError(''); }}
             />
@@ -110,6 +145,17 @@ export default function LandingPage() {
             </button>
           </form>
         </div>
+      </div>
+
+      {/* Penn footer */}
+      <div className="landing-penn-footer">
+        <svg className="landing-penn-logo" width="22" height="22" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Penn shield shape */}
+          <path d="M50 5 L90 20 L90 55 Q90 80 50 95 Q10 80 10 55 L10 20 Z" fill="#011F5B" stroke="#990000" strokeWidth="3"/>
+          <path d="M30 35 L30 65 M30 35 Q30 25 40 25 Q50 25 50 35 Q50 45 30 45" stroke="#fff" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+          <path d="M55 35 L55 65 M55 35 Q55 25 65 25 Q75 25 75 35 Q75 45 55 45" stroke="#fff" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        </svg>
+        <span>Made by a Penn Engineering student</span>
       </div>
     </div>
   );
