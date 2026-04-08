@@ -256,12 +256,12 @@ export default function BaristaTimeRangePicker({ date, existingSlots, barista, t
 
               <div className="form-field">
                 <label className="form-label">
-                  Zoom Link <span className="form-label-optional">(optional)</span>
+                  Virtual Meeting Link <span className="form-label-optional">(optional)</span>
                 </label>
                 <input
                   className="form-input"
                   type="url"
-                  placeholder="https://zoom.us/j/..."
+                  placeholder="https://zoom.us/j/... or meet.google.com/..."
                   value={zoomLink}
                   onChange={(e) => setZoomLink(e.target.value)}
                 />

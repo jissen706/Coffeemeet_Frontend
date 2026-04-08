@@ -177,11 +177,11 @@ export default function BaristaDayTimeline({ date, slots, barista, token, startD
               />
             </div>
             <div className="form-field" style={{marginBottom:8}}>
-              <label className="form-label">Meet Link <span style={{color:'#aaa',fontWeight:400}}>(optional)</span></label>
+              <label className="form-label">Virtual Meeting Link <span style={{color:'#aaa',fontWeight:400}}>(optional)</span></label>
               <input
                 className="form-input"
                 type="url"
-                placeholder="https://zoom.us/j/..."
+                placeholder="https://zoom.us/j/... or meet.google.com/..."
                 value={editMeetLink}
                 onChange={e=>setEditMeetLink(e.target.value)}
               />

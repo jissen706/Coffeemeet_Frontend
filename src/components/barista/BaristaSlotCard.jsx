@@ -36,7 +36,7 @@ function BaristaSlotCard({ slot, isOwn }) {
             <div className="slot-meta-row">
               <span className="slot-meta-icon">🎥</span>
               <a href={meet_link} target="_blank" rel="noreferrer" className="zoom-link">
-                Meet Link
+                Virtual Meeting Link
               </a>
             </div>
           )}
