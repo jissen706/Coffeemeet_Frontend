@@ -156,7 +156,9 @@ export default function OwnerCafeView() {
             <span className="owner-cafe-topbar-icon">☕</span>
             <div>
               <div className="owner-cafe-topbar-name">{cafe?.name || 'Cafe'}</div>
-              <div className="owner-cafe-topbar-sub">Owner View · Join code: {cafe?.join_code}</div>
+              <div className="owner-cafe-topbar-sub">
+                Admin View · Host code: <strong>{cafe?.join_code}</strong> · Participant code: <strong>{cafe?.participant_code}</strong>
+              </div>
             </div>
           </div>
           <div className="owner-cafe-topbar-right">

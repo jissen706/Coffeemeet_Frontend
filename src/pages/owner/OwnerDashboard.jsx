@@ -83,7 +83,8 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
               <div key={cafe.id} className="owner-cafe-card" onClick={() => navigate(`/owner/cafe/${cafe.id}`)}>
                 <div className="owner-cafe-card-name">{cafe.name}</div>
                 <div className="owner-cafe-card-dates">{fmtDate(cafe.start_date)} – {fmtDate(cafe.end_date)}</div>
-                <div className="owner-cafe-card-code">Join code: <strong>{cafe.join_code}</strong></div>
+                <div className="owner-cafe-card-code">Host code: <strong>{cafe.join_code}</strong></div>
+                <div className="owner-cafe-card-code">Participant code: <strong>{cafe.participant_code}</strong></div>
                 <div className="owner-cafe-card-arrow">→</div>
               </div>
             ))}
