@@ -61,14 +61,21 @@ function CustomerPage() {
         setSlots(slotsData);
         setBaristas(baristasData.map((b) => ({ ...b, expertise: getExpertise(b.id) })));
 
-        // Restore booked date highlight from persisted slot id and auto-open panel
+        // Restore booked session — but clear it if the host already unbooked
         const persistedSlotId = sessionStorage.getItem('my_booked_slot_id');
         if (persistedSlotId) {
           const bookedSlot = slotsData.find(s => s.id === Number(persistedSlotId));
-          if (bookedSlot) {
+          if (bookedSlot && bookedSlot.customer !== null) {
+            // Still booked — restore UI
             const date = new Date(bookedSlot.start_time).toLocaleDateString('en-CA');
             setMyBookedDates(new Set([date]));
             setSelectedDate(date);
+          } else {
+            // Slot was unbooked by host — clear persisted state
+            sessionStorage.removeItem('my_booked_slot_id');
+            sessionStorage.removeItem('customer_token');
+            setMyBookedSlotId(null);
+            setCustomerToken(null);
           }
         }
 
@@ -80,10 +87,12 @@ function CustomerPage() {
       });
   }, [joinCode]);
 
-  const myBookedSlot = useMemo(
-    () => (myBookedSlotId ? slots.find(s => s.id === myBookedSlotId) ?? null : null),
-    [slots, myBookedSlotId]
-  );
+  const myBookedSlot = useMemo(() => {
+    if (!myBookedSlotId) return null;
+    const slot = slots.find(s => s.id === myBookedSlotId);
+    // Return null if the slot no longer exists or was unbooked by the host
+    return (slot && slot.customer !== null) ? slot : null;
+  }, [slots, myBookedSlotId]);
 
   const slotsByDate = useMemo(() => {
     const map = {};
