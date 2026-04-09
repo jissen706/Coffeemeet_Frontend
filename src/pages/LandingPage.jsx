@@ -161,7 +161,7 @@ export default function LandingPage() {
           {/* Motto scroll */}
           <path d="M8 86 Q40 92 72 86" fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.5"/>
         </svg>
-        <span>Created by a Penn Engineering Student</span>
+        <span>Created by Penn Engineering Student</span>
       </div>
     </div>
   );
