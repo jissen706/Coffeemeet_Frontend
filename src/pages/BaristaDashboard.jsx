@@ -19,7 +19,21 @@ function BaristaDashboard() {
   const [searchParams] = useSearchParams();
   const joinCode = searchParams.get('code') || '';
 
-  const [barista, setBarista] = useState(null);
+  const [barista, setBaristaState] = useState(() => {
+    try {
+      const stored = localStorage.getItem(`barista_auth_${joinCode}`);
+      return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
+  });
+
+  function setBarista(data) {
+    setBaristaState(data);
+    if (data) {
+      localStorage.setItem(`barista_auth_${joinCode}`, JSON.stringify(data));
+    } else {
+      localStorage.removeItem(`barista_auth_${joinCode}`);
+    }
+  }
   const [cafe, setCafe] = useState(null);
   const [slots, setSlots] = useState([]);
   const [allBaristas, setAllBaristas] = useState([]);
@@ -85,6 +99,7 @@ function BaristaDashboard() {
         cafeName={cafe?.name || 'CoffeeMeet'}
         description="Manage your slots and availability"
         ownerName={`Host: ${barista.name}`}
+        onLogout={() => setBarista(null)}
       />
       <div className="main-layout">
         <HostSlotsSidebar

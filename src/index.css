@@ -1666,6 +1666,31 @@ body {
   letter-spacing: 0.5px;
 }
 
+.barista-login-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.barista-login-tab {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  color: rgba(245,230,208,0.5);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s, border-bottom 0.15s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.barista-login-tab.active {
+  color: #e8a050;
+  border-bottom-color: #c8773a;
+}
+.barista-login-tab:hover:not(.active) {
+  color: rgba(245,230,208,0.8);
+}
+
 .barista-login-form {
   padding: 22px 28px 28px;
   display: flex;

@@ -1,4 +1,4 @@
-function Header({ cafeName, description, ownerName }) {
+function Header({ cafeName, description, ownerName, onLogout }) {
   return (
     <header className="app-header">
       <div className="header-left">
@@ -11,6 +11,23 @@ function Header({ cafeName, description, ownerName }) {
       <div className="header-right">
         <div className="owner-label">Hosted by</div>
         <div className="owner-name">{ownerName}</div>
+        {onLogout && (
+          <button
+            onClick={onLogout}
+            style={{
+              marginLeft: 12,
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: '#f5e6d0',
+              borderRadius: 6,
+              padding: '4px 10px',
+              fontSize: '0.72rem',
+              cursor: 'pointer',
+            }}
+          >
+            Log Out
+          </button>
+        )}
       </div>
     </header>
   );
