@@ -44,17 +44,7 @@ export default function LandingPage() {
   return (
     <div className="landing-page">
       <div className="landing-hero">
-        {/* Coffee cup SVG */}
-        <div className="landing-logo">
-          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="8" y="24" width="36" height="28" rx="6" fill="#3d1a08" stroke="#c8773a" strokeWidth="2"/>
-            <path d="M44 30 Q54 30 54 38 Q54 46 44 46" stroke="#c8773a" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-            <rect x="12" y="50" width="28" height="4" rx="2" fill="#c8773a" opacity="0.6"/>
-            <path d="M22 18 Q22 12 26 12 Q26 6 30 6" stroke="#c8773a" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.7"/>
-            <path d="M30 18 Q30 13 33 13" stroke="#c8773a" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5"/>
-            <ellipse cx="26" cy="35" rx="8" ry="4" fill="#c8773a" opacity="0.18"/>
-          </svg>
-        </div>
+        <div className="landing-logo">☕</div>
         <h1 className="landing-title">CoffeeMeet</h1>
         <p className="landing-subtitle">
           The easiest way to schedule coffee chats for your organization.
