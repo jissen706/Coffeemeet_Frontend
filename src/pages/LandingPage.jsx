@@ -139,13 +139,29 @@ export default function LandingPage() {
 
       {/* Penn footer */}
       <div className="landing-penn-footer">
-        <svg className="landing-penn-logo" width="22" height="22" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Penn shield shape */}
-          <path d="M50 5 L90 20 L90 55 Q90 80 50 95 Q10 80 10 55 L10 20 Z" fill="#011F5B" stroke="#990000" strokeWidth="3"/>
-          <path d="M30 35 L30 65 M30 35 Q30 25 40 25 Q50 25 50 35 Q50 45 30 45" stroke="#fff" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-          <path d="M55 35 L55 65 M55 35 Q55 25 65 25 Q75 25 75 35 Q75 45 55 45" stroke="#fff" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        <svg className="landing-penn-logo" width="28" height="32" viewBox="0 0 80 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Shield outline */}
+          <path d="M4 4 H76 V54 Q76 82 40 90 Q4 82 4 54 Z" fill="#011F5B"/>
+          {/* Crimson top bar */}
+          <path d="M4 4 H76 V26 H4 Z" fill="#990000"/>
+          {/* Shield border */}
+          <path d="M4 4 H76 V54 Q76 82 40 90 Q4 82 4 54 Z" fill="none" stroke="#fff" strokeWidth="1.5"/>
+          {/* White chevron */}
+          <path d="M4 52 L40 28 L76 52" fill="none" stroke="#fff" strokeWidth="9" strokeLinejoin="round"/>
+          {/* Three white circles */}
+          <circle cx="24" cy="65" r="7" fill="#fff"/>
+          <circle cx="40" cy="65" r="7" fill="#fff"/>
+          <circle cx="56" cy="65" r="7" fill="#fff"/>
+          {/* Books on top bar (left) */}
+          <rect x="12" y="9" width="8" height="10" rx="1" fill="#fff" opacity="0.9"/>
+          <line x1="16" y1="9" x2="16" y2="19" stroke="#990000" strokeWidth="1"/>
+          {/* Books on top bar (right) */}
+          <rect x="60" y="9" width="8" height="10" rx="1" fill="#fff" opacity="0.9"/>
+          <line x1="64" y1="9" x2="64" y2="19" stroke="#990000" strokeWidth="1"/>
+          {/* Motto scroll */}
+          <path d="M8 86 Q40 92 72 86" fill="none" stroke="#fff" strokeWidth="1.5" opacity="0.5"/>
         </svg>
-        <span>Made by a Penn Engineering student</span>
+        <span>Created by a Penn Engineering Student</span>
       </div>
     </div>
   );
