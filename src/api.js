@@ -20,6 +20,12 @@ export async function getCafeByCode(joinCode) {
   return res.json();
 }
 
+export async function getCafeByHostCode(hostCode) {
+  const res = await fetch(`${BASE_URL}/cafes/host-join/${encodeURIComponent(hostCode)}`);
+  if (!res.ok) throw new Error(`Cafe not found (${res.status})`);
+  return res.json();
+}
+
 export async function getCafeBaristas(cafeId) {
   const res = await fetch(`${BASE_URL}/cafes/${cafeId}/baristas`);
   if (!res.ok) throw new Error(`Failed to load baristas (${res.status})`);

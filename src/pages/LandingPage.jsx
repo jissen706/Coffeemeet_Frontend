@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCafeByCode } from '../api';
+import { getCafeByCode, getCafeByHostCode } from '../api';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -17,10 +17,10 @@ export default function LandingPage() {
     if (!code) { setBaristaError('Enter a join code'); return; }
     setBaristaLoading(true);
     try {
-      await getCafeByCode(code);
+      await getCafeByHostCode(code);
       navigate(`/barista?code=${encodeURIComponent(code)}`);
     } catch {
-      setBaristaError('Invalid join code — check with your admin');
+      setBaristaError('Invalid host code — check with your admin');
     } finally {
       setBaristaLoading(false);
     }
