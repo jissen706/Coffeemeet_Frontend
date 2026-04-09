@@ -26,10 +26,20 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
       .finally(() => setLoading(false));
   }, []);
 
+  const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
+
   async function handleCreateCafe(e) {
     e.preventDefault();
     if (!form.name.trim() || !form.start_date || !form.end_date) {
       setCreateError('All fields are required');
+      return;
+    }
+    if (form.start_date < today) {
+      setCreateError('Start date cannot be in the past');
+      return;
+    }
+    if (form.end_date < form.start_date) {
+      setCreateError('End date cannot be before start date');
       return;
     }
     setCreating(true);
@@ -114,8 +124,18 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
                   <input
                     className="form-input"
                     type="date"
+                    min={today}
                     value={form.start_date}
-                    onChange={e => setForm(p => ({ ...p, start_date: e.target.value }))}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setForm(p => ({
+                        ...p,
+                        start_date: val,
+                        // clear end date if it's now before the new start
+                        end_date: p.end_date && p.end_date < val ? '' : p.end_date,
+                      }));
+                      setCreateError('');
+                    }}
                   />
                 </div>
                 <div className="form-field">
@@ -123,8 +143,9 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
                   <input
                     className="form-input"
                     type="date"
+                    min={form.start_date || today}
                     value={form.end_date}
-                    onChange={e => setForm(p => ({ ...p, end_date: e.target.value }))}
+                    onChange={e => { setForm(p => ({ ...p, end_date: e.target.value })); setCreateError(''); }}
                   />
                 </div>
               </div>
