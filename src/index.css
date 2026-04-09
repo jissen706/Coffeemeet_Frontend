@@ -1675,7 +1675,7 @@ body {
   padding: 10px;
   background: none;
   border: none;
-  color: #f5e6d0;
+  color: #5a2d0c;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
@@ -1685,10 +1685,10 @@ body {
 }
 .barista-login-tab.active {
   color: #3d1a08;
-  border-bottom-color: #3d1a08;
+  border-bottom-color: #c8773a;
 }
 .barista-login-tab:hover:not(.active) {
-  color: #fff;
+  color: #3d1a08;
 }
 
 .barista-login-form {
