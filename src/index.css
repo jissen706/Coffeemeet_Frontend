@@ -1675,7 +1675,7 @@ body {
   padding: 10px;
   background: none;
   border: none;
-  color: rgba(245,230,208,0.5);
+  color: rgba(245,230,208,0.85);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
@@ -1688,7 +1688,7 @@ body {
   border-bottom-color: #c8773a;
 }
 .barista-login-tab:hover:not(.active) {
-  color: rgba(245,230,208,0.8);
+  color: #fff;
 }
 
 .barista-login-form {
