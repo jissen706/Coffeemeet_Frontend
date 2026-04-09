@@ -37,7 +37,7 @@ function BaristaDashboard() {
   const [cafe, setCafe] = useState(null);
   const [slots, setSlots] = useState([]);
   const [allBaristas, setAllBaristas] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
 
   // Fetch cafe data after barista logs in
@@ -81,6 +81,8 @@ function BaristaDashboard() {
   }
 
   if (!barista) {
+    // Reset loading so the loading screen doesn't flash after logout+re-login
+    if (loading) setLoading(false);
     return <BaristaLogin joinCode={joinCode} onLogin={setBarista} />;
   }
 

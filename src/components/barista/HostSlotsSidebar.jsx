@@ -16,9 +16,13 @@ export default function HostSlotsSidebar({ slots, barista, token, onSlotUpdated,
 
   const bookedSlots = useMemo(() =>
     slots
-      .filter(s => s.barista.id === barista.id && s.customer !== null)
+      .filter(s => {
+        const isMySlot = Number(s.barista.id) === Number(barista.id)
+          || s.barista.email === barista.email;
+        return isMySlot && s.customer != null;
+      })
       .sort((a, b) => new Date(a.start_time) - new Date(b.start_time)),
-    [slots, barista.id]
+    [slots, barista.id, barista.email]
   );
 
   function openEdit(slot) {
