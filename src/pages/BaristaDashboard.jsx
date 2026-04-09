@@ -5,7 +5,7 @@ import HostSlotsSidebar from '../components/barista/HostSlotsSidebar';
 import BaristaLogin from '../components/barista/BaristaLogin';
 import BaristaCalendarGrid from '../components/barista/BaristaCalendarGrid';
 import BaristaDayTimeline from '../components/barista/BaristaDayTimeline';
-import { getCafe, getSlots, getCafeBaristas } from '../api';
+import { getCafe, getHostSlots, getCafeBaristas } from '../api';
 
 const EXPERTISE_OPTIONS = [
   'Latte Art', 'Cold Brew Master', 'Espresso Expert',
@@ -46,7 +46,7 @@ function BaristaDashboard() {
     setLoading(true);
     Promise.all([
       getCafe(barista.cafe_id),
-      getSlots(barista.cafe_id),
+      getHostSlots(barista.cafe_id, barista.token),
       getCafeBaristas(barista.cafe_id),
     ])
       .then(([cafeData, slotsData, baristasData]) => {

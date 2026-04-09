@@ -14,6 +14,14 @@ export async function getSlots(cafeId) {
   return res.json();
 }
 
+export async function getHostSlots(cafeId, token) {
+  const res = await fetch(`${BASE_URL}/cafes/${cafeId}/host-slots`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`Failed to load slots (${res.status})`);
+  return res.json();
+}
+
 export async function getCafeByCode(joinCode) {
   const res = await fetch(`${BASE_URL}/cafes/join/${encodeURIComponent(joinCode)}`);
   if (!res.ok) throw new Error(`Cafe not found (${res.status})`);
