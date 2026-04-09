@@ -87,6 +87,19 @@ export async function deleteSlot(slotId, token) {
 
 // ── Customer API ──────────────────────────────────────────────────────────────
 
+export async function lookupCustomerByEmail(cafeId, email) {
+  const res = await fetch(`${BASE_URL}/customers/lookup/${cafeId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.detail || `No booking found (${res.status})`);
+  }
+  return res.json();
+}
+
 export async function createCustomer(cafeId, { name, email }) {
   const res = await fetch(`${BASE_URL}/customers/${cafeId}`, {
     method: 'POST',

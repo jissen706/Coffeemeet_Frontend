@@ -7,7 +7,7 @@ import DayTimeline from '../components/DayTimeline';
 import BookingModal from '../components/BookingModal';
 import BookingPage from '../components/BookingPage';
 import CelebrationOverlay from '../components/CelebrationOverlay';
-import { getCafeByCode, getSlots, getCafeBaristas, createCustomer, bookSlot, cancelBooking } from '../api';
+import { getCafeByCode, getSlots, getCafeBaristas, createCustomer, bookSlot, cancelBooking, lookupCustomerByEmail } from '../api';
 
 const EXPERTISE_OPTIONS = [
   'Latte Art', 'Cold Brew Master', 'Espresso Expert',
@@ -19,6 +19,7 @@ function getExpertise(id) {
 
 function CustomerPage() {
   const { joinCode } = useParams();
+
 
   const [cafe, setCafe] = useState(null);
   const [slots, setSlots] = useState([]);
@@ -40,9 +41,8 @@ function CustomerPage() {
 
   const [showCancelWidget, setShowCancelWidget] = useState(false);
 
-  // "Already booked?" return flow
+  // "Find my booking" flow — triggered by "Already booked?" button
   const [showReturnForm, setShowReturnForm] = useState(false);
-  const [returnName, setReturnName] = useState('');
   const [returnEmail, setReturnEmail] = useState('');
   const [returnError, setReturnError] = useState('');
   const [returnLoading, setReturnLoading] = useState(false);
@@ -66,12 +66,10 @@ function CustomerPage() {
         if (persistedSlotId) {
           const bookedSlot = slotsData.find(s => s.id === Number(persistedSlotId));
           if (bookedSlot && bookedSlot.customer !== null) {
-            // Still booked — restore UI
             const date = new Date(bookedSlot.start_time).toLocaleDateString('en-CA');
             setMyBookedDates(new Set([date]));
             setSelectedDate(date);
           } else {
-            // Slot was unbooked by host — clear persisted state
             sessionStorage.removeItem('my_booked_slot_id');
             sessionStorage.removeItem('customer_token');
             setMyBookedSlotId(null);
@@ -148,14 +146,14 @@ function CustomerPage() {
   }
 
   async function handleReturnLogin() {
-    if (!returnName.trim() || !returnEmail.trim()) { setReturnError('Enter your name and email'); return; }
+    if (!returnEmail.trim()) { setReturnError('Enter your email'); return; }
     setReturnLoading(true);
     setReturnError('');
     try {
-      const customer = await createCustomer(cafe.id, { name: returnName.trim(), email: returnEmail.trim() });
+      const customer = await lookupCustomerByEmail(cafe.id, returnEmail.trim());
       const bookedSlot = slots.find(s => s.customer?.id === customer.user.id);
       if (!bookedSlot) {
-        setReturnError('No booking found for that email in this café.');
+        setReturnError('No active booking found for this email.');
         return;
       }
       setCustomerToken(customer.access_token);
@@ -167,7 +165,7 @@ function CustomerPage() {
       setSelectedDate(date);
       setShowReturnForm(false);
     } catch (err) {
-      setReturnError(err.message || 'Could not find your booking');
+      setReturnError(err.message?.includes('404') ? 'No booking found for this email.' : (err.message || 'Could not find your booking'));
     } finally {
       setReturnLoading(false);
     }
@@ -271,30 +269,24 @@ function CustomerPage() {
       {/* Return login modal */}
       {showReturnForm && (
         <div className="tl-confirm-backdrop">
-          <div className="tl-confirm-popup" style={{ width: 320 }}>
-            <div className="tl-confirm-title">Find your booking</div>
-            <div className="tl-confirm-sub" style={{ marginBottom: 12 }}>Enter the name and email you booked with</div>
-            <input
-              className="form-input"
-              type="text"
-              placeholder="Your name"
-              value={returnName}
-              onChange={e => { setReturnName(e.target.value); setReturnError(''); }}
-              style={{ marginBottom: 8 }}
-            />
+          <div className="tl-confirm-popup" style={{ width: 340 }}>
+            <div className="tl-confirm-title">Access your booking</div>
+            <div className="tl-confirm-sub" style={{ marginBottom: 16 }}>Enter the email you used when booking</div>
             <input
               className="form-input"
               type="email"
-              placeholder="Your email"
+              placeholder="Your email address"
               value={returnEmail}
               onChange={e => { setReturnEmail(e.target.value); setReturnError(''); }}
+              onKeyDown={e => e.key === 'Enter' && handleReturnLogin()}
               style={{ marginBottom: 8 }}
+              autoFocus
             />
             {returnError && <div className="form-error" style={{ marginBottom: 8 }}>{returnError}</div>}
             <div className="tl-confirm-actions">
-              <button className="tl-confirm-cancel" onClick={() => { setShowReturnForm(false); setReturnError(''); }}>Cancel</button>
+              <button className="tl-confirm-cancel" onClick={() => { setShowReturnForm(false); setReturnError(''); setReturnEmail(''); }}>Cancel</button>
               <button className="tl-confirm-ok" onClick={handleReturnLogin} disabled={returnLoading}>
-                {returnLoading ? 'Looking…' : 'Find Booking'}
+                {returnLoading ? 'Looking…' : 'Load My Booking'}
               </button>
             </div>
           </div>
