@@ -400,10 +400,12 @@ body {
   line-height: 1;
 }
 
-.contact-icon {
-  width: 16px;
-  height: 16px;
+.contact-icon-wrap {
+  width: 18px;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--text-sidebar-muted);
   opacity: 0.75;
 }
