@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { updateCafe } from '../../api';
 
 export default function OwnerSettings({ cafe, token, onClose, onCafeUpdated }) {
-  const [cafeName,  setCafeName]  = useState(cafe.name);
-  const [startDate, setStartDate] = useState(cafe.start_date);
-  const [endDate,   setEndDate]   = useState(cafe.end_date);
-  const [oneSlot,   setOneSlot]   = useState(cafe.one_slot);
+  const [cafeName,    setCafeName]    = useState(cafe.name);
+  const [startDate,   setStartDate]   = useState(cafe.start_date);
+  const [endDate,     setEndDate]     = useState(cafe.end_date);
+  const [oneSlot,     setOneSlot]     = useState(cafe.one_slot);
+  const [description, setDescription] = useState(cafe.description || '');
   const [saving,    setSaving]    = useState(false);
   const [saveMsg,   setSaveMsg]   = useState('');
 
@@ -16,6 +17,7 @@ export default function OwnerSettings({ cafe, token, onClose, onCafeUpdated }) {
     try {
       const updated = await updateCafe(cafe.id, {
         name: cafeName, start_date: startDate, end_date: endDate, one_slot: oneSlot,
+        description: description.trim() || null,
       }, token);
       onCafeUpdated(updated);
       setSaveMsg('Saved!');
@@ -63,6 +65,17 @@ export default function OwnerSettings({ cafe, token, onClose, onCafeUpdated }) {
               />
               One slot per customer
             </label>
+            <div className="form-field" style={{ marginTop: 12 }}>
+              <label className="form-label">Description <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></label>
+              <textarea
+                className="form-input"
+                placeholder="Rules, expectations, what to bring…"
+                rows={3}
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                style={{ resize: 'vertical', minHeight: 72 }}
+              />
+            </div>
             <div className="owner-settings-save-row">
               <button type="submit" className="owner-modal-submit" disabled={saving}>
                 {saving ? 'Saving…' : 'Save Changes'}

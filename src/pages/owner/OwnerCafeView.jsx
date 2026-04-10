@@ -198,7 +198,7 @@ export default function OwnerCafeView() {
 
         {activeView === 'calendar' ? (
           <div className="main-layout">
-            <BaristaSidebar baristas={baristas} />
+            <BaristaSidebar baristas={baristas} description={cafe?.description} />
             <CalendarGrid
               slots={slots}
               startDate={cafe?.start_date}

@@ -232,7 +232,7 @@ function CustomerPage() {
           ownerName=""
         />
         <div className="main-layout">
-          <BaristaSidebar baristas={baristas} />
+          <BaristaSidebar baristas={baristas} description={cafe?.description} />
           <CalendarGrid
             slots={slots}
             startDate={cafe?.start_date}

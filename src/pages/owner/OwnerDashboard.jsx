@@ -14,7 +14,7 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
   const [cafes, setCafes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
-  const [form, setForm] = useState({ name: '', start_date: '', end_date: '', one_slot: true });
+  const [form, setForm] = useState({ name: '', start_date: '', end_date: '', one_slot: true, description: '' });
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
   const [shareLinks, setShareLinks] = useState(null);
@@ -46,12 +46,12 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
     setCreateError('');
     try {
       const cafe = await createCafeApi(
-        { name: form.name, start_date: form.start_date, end_date: form.end_date, one_slot: form.one_slot },
+        { name: form.name, start_date: form.start_date, end_date: form.end_date, one_slot: form.one_slot, description: form.description.trim() || null },
         token
       );
       setCafes(prev => [...prev, cafe]);
       setShowCreate(false);
-      setForm({ name: '', start_date: '', end_date: '', one_slot: true });
+      setForm({ name: '', start_date: '', end_date: '', one_slot: true, description: '' });
       setShareLinks(cafe);
     } catch (err) {
       setCreateError(err.message);
@@ -157,6 +157,17 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
                 />
                 One slot per customer
               </label>
+              <div className="form-field" style={{ marginTop: 12 }}>
+                <label className="form-label">Description <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></label>
+                <textarea
+                  className="form-input"
+                  placeholder="Rules, expectations, what to bring…"
+                  rows={3}
+                  value={form.description}
+                  onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
+                  style={{ resize: 'vertical', minHeight: 72 }}
+                />
+              </div>
               {createError && <div className="owner-form-error">{createError}</div>}
               <div className="owner-modal-actions">
                 <button type="button" className="owner-modal-cancel" onClick={() => setShowCreate(false)}>Cancel</button>
