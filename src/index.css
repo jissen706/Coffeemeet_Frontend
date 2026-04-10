@@ -392,10 +392,12 @@ body {
 
 .barista-contact-row {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 6px;
   font-size: 0.75rem;
   color: var(--text-sidebar-muted);
+  line-height: 1;
 }
 
 .contact-icon {
