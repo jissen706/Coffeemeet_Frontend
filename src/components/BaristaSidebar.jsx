@@ -56,7 +56,7 @@ function BaristaSidebar({ baristas, description }) {
 
                 <div className="barista-contact">
                   <div className="barista-contact-row">
-                    <svg className="contact-icon" style={{ width: 12, height: 12 }} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg className="contact-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <rect x="2" y="4.5" width="16" height="11" rx="2" stroke="currentColor" strokeWidth="1.4"/>
                       <path d="M2 7l7.47 4.67a1 1 0 001.06 0L18 7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
                     </svg>
@@ -64,7 +64,7 @@ function BaristaSidebar({ baristas, description }) {
                   </div>
                   {barista.phone_number && (
                     <div className="barista-contact-row">
-                      <svg className="contact-icon" style={{ width: 16, height: 16 }} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg className="contact-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M5.5 3h2.8l1.2 3.2-1.7 1a9.1 9.1 0 004 4l1-1.7 3.2 1.2V13A1.5 1.5 0 0114.5 14.5C8.4 14.5 5.5 8.4 5.5 5.5A1.5 1.5 0 015.5 3z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                       <span>{barista.phone_number}</span>
