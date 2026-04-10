@@ -335,7 +335,7 @@ function CustomerPage() {
           {myBookedSlot.notes && (
             <div className="bw-row bw-notes">
               <span className="bw-label">Notes</span>
-              <span className="bw-val" style={{fontStyle:'italic',color:'#a0522d'}}>{myBookedSlot.notes}</span>
+              <span className="bw-val" style={{fontStyle:'italic'}}>{myBookedSlot.notes}</span>
             </div>
           )}
           {myBookedSlot.meet_link && (

@@ -9,8 +9,8 @@ function Header({ cafeName, description, ownerName, onLogout }) {
         </div>
       </div>
       <div className="header-right">
-        <div className="owner-label">Hosted by</div>
-        <div className="owner-name">{ownerName}</div>
+        {ownerName && <div className="owner-label">Hosted by</div>}
+        {ownerName && <div className="owner-name">{ownerName}</div>}
         {onLogout && (
           <button
             onClick={onLogout}

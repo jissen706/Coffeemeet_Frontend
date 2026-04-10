@@ -129,7 +129,7 @@ export default function DayTimeline({ date, slots, onClose, onBook, myBookedSlot
                           </div>
                         )}
                         {isMySlot && slot.notes && (
-                          <div style={{fontSize:'0.7rem',marginTop:2,opacity:0.9,fontStyle:'italic',lineHeight:1.3}}>
+                          <div style={{fontSize:'0.7rem',marginTop:2,color:'#fff',fontStyle:'italic',lineHeight:1.3}}>
                             {slot.notes}
                           </div>
                         )}
