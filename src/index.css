@@ -399,10 +399,11 @@ body {
 }
 
 .contact-icon {
-  font-size: 0.8rem;
-  width: 14px;
-  text-align: center;
+  width: 13px;
+  height: 13px;
   flex-shrink: 0;
+  color: var(--text-sidebar-muted);
+  opacity: 0.75;
 }
 
 .no-baristas {
