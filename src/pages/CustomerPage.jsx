@@ -228,7 +228,7 @@ function CustomerPage() {
       <div className="app">
         <Header
           cafeName={cafe?.name || 'CoffeeMeet'}
-          description="Where great conversations brew over better coffee."
+          description="Pick a date on the calendar, then choose an available slot to book."
           ownerName=""
         />
         <div className="main-layout">
