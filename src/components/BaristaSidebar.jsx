@@ -56,7 +56,7 @@ function BaristaSidebar({ baristas, description }) {
 
                 <div className="barista-contact">
                   <div className="barista-contact-row">
-                    <svg className="contact-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg className="contact-icon" style={{ width: 12, height: 12 }} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <rect x="2" y="4.5" width="16" height="11" rx="2" stroke="currentColor" strokeWidth="1.4"/>
                       <path d="M2 7l7.47 4.67a1 1 0 001.06 0L18 7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
                     </svg>
