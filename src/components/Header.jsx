@@ -8,7 +8,7 @@ function Header({ cafeName, description, ownerName, onLogout }) {
           <div className="cafe-tagline">{description}</div>
         </div>
       </div>
-      <div className="header-right" style={{ flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+      <div className="header-right" style={{ flexDirection: 'column', alignItems: 'flex-end', gap: 14 }}>
         {ownerName && <div className="owner-name">{ownerName}</div>}
         {onLogout && (
           <button
