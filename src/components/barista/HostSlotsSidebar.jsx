@@ -8,6 +8,7 @@ export default function HostSlotsSidebar({ slots, barista, token, onSlotUpdated,
   const [editTarget,   setEditTarget]   = useState(null);
   const [editLocation, setEditLocation] = useState('');
   const [editMeetLink, setEditMeetLink] = useState('');
+  const [editNotes,    setEditNotes]    = useState('');
   const [editSaving,   setEditSaving]   = useState(false);
   const [editError,    setEditError]    = useState('');
 
@@ -29,6 +30,7 @@ export default function HostSlotsSidebar({ slots, barista, token, onSlotUpdated,
     setEditTarget(slot);
     setEditLocation(slot.location || '');
     setEditMeetLink(slot.meet_link || '');
+    setEditNotes(slot.notes || '');
     setEditError('');
   }
 
@@ -36,7 +38,7 @@ export default function HostSlotsSidebar({ slots, barista, token, onSlotUpdated,
     setEditSaving(true);
     setEditError('');
     try {
-      const updated = await editSlot(editTarget.id, { location: editLocation, meet_link: editMeetLink || null }, token);
+      const updated = await editSlot(editTarget.id, { location: editLocation, meet_link: editMeetLink || null, notes: editNotes.trim() || null }, token);
       onSlotUpdated(updated);
       setEditTarget(null);
     } catch (err) {
@@ -129,6 +131,17 @@ export default function HostSlotsSidebar({ slots, barista, token, onSlotUpdated,
                 placeholder="https://zoom.us/j/... or meet.google.com/..."
                 value={editMeetLink}
                 onChange={e => setEditMeetLink(e.target.value)}
+              />
+            </div>
+            <div className="form-field" style={{ marginBottom: 8 }}>
+              <label className="form-label">Notes <span style={{ color: '#aaa', fontWeight: 400 }}>(optional)</span></label>
+              <textarea
+                className="form-input"
+                placeholder="e.g. I'll be wearing a red hoodie, sitting near the window..."
+                value={editNotes}
+                onChange={e => setEditNotes(e.target.value)}
+                rows={3}
+                style={{ resize: 'vertical' }}
               />
             </div>
             {editError && <div className="form-error" style={{ marginBottom: 8 }}>{editError}</div>}

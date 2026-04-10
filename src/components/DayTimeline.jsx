@@ -128,6 +128,11 @@ export default function DayTimeline({ date, slots, onClose, onBook, myBookedSlot
                             {fmtTime(slot.start_time)}–{fmtTime(slot.end_time)}
                           </div>
                         )}
+                        {isMySlot && slot.notes && (
+                          <div style={{fontSize:'0.7rem',marginTop:2,opacity:0.9,fontStyle:'italic',lineHeight:1.3}}>
+                            {slot.notes}
+                          </div>
+                        )}
                       </div>
                       {isMySlot && (
                         <button

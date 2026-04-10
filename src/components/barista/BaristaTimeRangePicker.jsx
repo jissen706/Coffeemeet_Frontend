@@ -38,6 +38,7 @@ export default function BaristaTimeRangePicker({ date, existingSlots, barista, t
   const [duration,    setDuration]    = useState(20);
   const [location,    setLocation]    = useState('');
   const [zoomLink,    setZoomLink]    = useState('');
+  const [notes,       setNotes]       = useState('');
   const [locErr,      setLocErr]      = useState('');
   const [submitErr,   setSubmitErr]   = useState('');
   const [submitting,  setSubmitting]  = useState(false);
@@ -87,6 +88,7 @@ export default function BaristaTimeRangePicker({ date, existingSlots, barista, t
           end_time:   minsToISO(endMins,   date),
           location:   location.trim(),
           meet_link:  zoomLink.trim() || null,
+          notes:      notes.trim() || null,
         };
         const created = await createSlot(barista.cafe_id, slotData, token);
         results.push(created);
@@ -264,6 +266,20 @@ export default function BaristaTimeRangePicker({ date, existingSlots, barista, t
                   placeholder="https://zoom.us/j/... or meet.google.com/..."
                   value={zoomLink}
                   onChange={(e) => setZoomLink(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">
+                  Notes <span className="form-label-optional">(optional)</span>
+                </label>
+                <textarea
+                  className="form-input"
+                  placeholder="e.g. I'll be wearing a red hoodie, sitting near the window..."
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={3}
+                  style={{ resize: 'vertical' }}
                 />
               </div>
             </div>

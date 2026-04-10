@@ -332,6 +332,12 @@ function CustomerPage() {
             <span className="bw-label">Location</span>
             <span className="bw-val">{myBookedSlot.location || '—'}</span>
           </div>
+          {myBookedSlot.notes && (
+            <div className="bw-row bw-notes">
+              <span className="bw-label">Notes</span>
+              <span className="bw-val" style={{fontStyle:'italic',color:'#a0522d'}}>{myBookedSlot.notes}</span>
+            </div>
+          )}
           {myBookedSlot.meet_link && (
             <a href={myBookedSlot.meet_link} target="_blank" rel="noopener noreferrer" className="bw-join-btn">
               Join Meeting ↗
