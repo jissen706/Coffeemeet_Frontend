@@ -9,13 +9,12 @@ function Header({ cafeName, description, ownerName, onLogout }) {
         </div>
       </div>
       <div className="header-right">
-        {ownerName && <div className="owner-label">Hosted by</div>}
         {ownerName && <div className="owner-name">{ownerName}</div>}
         {onLogout && (
           <button
             onClick={onLogout}
             style={{
-              marginLeft: 12,
+              marginLeft: 20,
               background: 'rgba(255,255,255,0.1)',
               border: '1px solid rgba(255,255,255,0.2)',
               color: '#f5e6d0',
