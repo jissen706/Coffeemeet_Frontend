@@ -138,20 +138,19 @@ export default function DayTimeline({ date, slots, onClose, onBook, myBookedSlot
                       onClick={() => isMySlot ? null : handleSlotClick(slot)}
                     >
                       <div className="tl-slot-text">
-                        <div className="tl-slot-name">
-                          {isMySlot ? '★ You' : isOpen ? slot.barista.name.split(' ')[0] : 'Booked'}
+                        <div className="tl-slot-name" style={{ display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' }}>
+                          <span>
+                            {isMySlot ? '★ You' : isOpen ? slot.barista.name.split(' ')[0] : 'Booked'}
+                          </span>
+                          {statusLine && (
+                            <span style={{ fontSize: '0.7rem', fontWeight: 600, opacity: 0.9 }}>
+                              · {statusLine}
+                            </span>
+                          )}
                         </div>
                         {h>=38&&(
                           <div className="tl-slot-time" style={{color: isOpen||isMySlot ? 'rgba(255,255,255,0.85)' : '#aaa'}}>
                             {fmtTime(slot.start_time)}–{fmtTime(slot.end_time)}
-                            {statusLine && (
-                              <span style={{ marginLeft: 6, fontWeight: 700 }}>· {statusLine}</span>
-                            )}
-                          </div>
-                        )}
-                        {h<38 && statusLine && (
-                          <div className="tl-slot-time" style={{ color: isOpen||isMySlot ? 'rgba(255,255,255,0.85)' : '#aaa' }}>
-                            {statusLine}
                           </div>
                         )}
                         {isMySlot && slot.notes && (
