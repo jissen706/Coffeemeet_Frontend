@@ -20,7 +20,7 @@ export default function HostSlotsSidebar({ slots, barista, token, onSlotUpdated,
       .filter(s => {
         const isMySlot = Number(s.barista.id) === Number(barista.id)
           || s.barista.email === barista.email;
-        return isMySlot && s.customer != null;
+        return isMySlot && (s.customers?.length ?? 0) > 0;
       })
       .sort((a, b) => new Date(a.start_time) - new Date(b.start_time)),
     [slots, barista.id, barista.email]
@@ -55,7 +55,7 @@ export default function HostSlotsSidebar({ slots, barista, token, onSlotUpdated,
       onSlotUnbooked(updated);
     } catch {
       // optimistic fallback
-      onSlotUnbooked({ ...unbookTarget, customer: null, status: 'open', meet_link: null });
+      onSlotUnbooked({ ...unbookTarget, customers: [], status: 'open', meet_link: null });
     } finally {
       setUnbooking(false);
       setUnbookTarget(null);
@@ -70,38 +70,50 @@ export default function HostSlotsSidebar({ slots, barista, token, onSlotUpdated,
         {bookedSlots.length === 0 ? (
           <div className="hss-empty">No bookings yet.<br/>Your booked slots will appear here.</div>
         ) : (
-          bookedSlots.map(slot => (
-            <div key={slot.id} className="hss-card">
-              <div className="hss-card-date">{fmtDate(slot.start_time)}</div>
-              <div className="hss-card-time">{fmtTime(slot.start_time)} – {fmtTime(slot.end_time)}</div>
+          bookedSlots.map(slot => {
+            const cap = slot.max_participants ?? 1;
+            const taken = slot.customers?.length ?? 0;
+            return (
+              <div key={slot.id} className="hss-card">
+                <div className="hss-card-date">{fmtDate(slot.start_time)}</div>
+                <div className="hss-card-time">{fmtTime(slot.start_time)} – {fmtTime(slot.end_time)}</div>
 
-              <div className="hss-divider"/>
+                <div className="hss-divider"/>
 
-              <div className="hss-row">
-                <span className="hss-label">Participant</span>
-                <span className="hss-val">{slot.customer.name}</span>
-              </div>
-              <div className="hss-row">
-                <span className="hss-label">Email</span>
-                <a href={`mailto:${slot.customer.email}`} className="hss-email">{slot.customer.email}</a>
-              </div>
-              <div className="hss-row">
-                <span className="hss-label">Location</span>
-                <span className="hss-val">{slot.location || '—'}</span>
-              </div>
+                <div className="hss-row">
+                  <span className="hss-label">
+                    {taken === 1 ? 'Participant' : `Participants (${taken}${cap > 1 ? `/${cap}` : ''})`}
+                  </span>
+                  <span className="hss-val">{slot.customers.map(c => c.name).join(', ')}</span>
+                </div>
+                <div className="hss-row">
+                  <span className="hss-label">Email{taken === 1 ? '' : 's'}</span>
+                  <span className="hss-val" style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-end' }}>
+                    {slot.customers.map(c => (
+                      <a key={c.id} href={`mailto:${c.email}`} className="hss-email">{c.email}</a>
+                    ))}
+                  </span>
+                </div>
+                <div className="hss-row">
+                  <span className="hss-label">Location</span>
+                  <span className="hss-val">{slot.location || '—'}</span>
+                </div>
 
-              {slot.meet_link && (
-                <a href={slot.meet_link} target="_blank" rel="noopener noreferrer" className="hss-join-btn">
-                  Join Meeting ↗
-                </a>
-              )}
+                {slot.meet_link && (
+                  <a href={slot.meet_link} target="_blank" rel="noopener noreferrer" className="hss-join-btn">
+                    Join Meeting ↗
+                  </a>
+                )}
 
-              <div className="hss-actions">
-                <button className="hss-edit-btn" onClick={() => openEdit(slot)}>✎ Edit</button>
-                <button className="hss-unbook-btn" onClick={() => setUnbookTarget(slot)}>Cancel Booking</button>
+                <div className="hss-actions">
+                  <button className="hss-edit-btn" onClick={() => openEdit(slot)}>✎ Edit</button>
+                  <button className="hss-unbook-btn" onClick={() => setUnbookTarget(slot)}>
+                    {taken > 1 ? 'Cancel All' : 'Cancel Booking'}
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </aside>
 
@@ -166,7 +178,7 @@ export default function HostSlotsSidebar({ slots, barista, token, onSlotUpdated,
           <div className="tl-confirm-popup">
             <div className="tl-confirm-title">Cancel this booking?</div>
             <div className="tl-confirm-sub">
-              {unbookTarget.customer?.name} · {fmtTime(unbookTarget.start_time)}–{fmtTime(unbookTarget.end_time)}
+              {(unbookTarget.customers || []).map(c => c.name).join(', ')} · {fmtTime(unbookTarget.start_time)}–{fmtTime(unbookTarget.end_time)}
             </div>
             <div className="tl-confirm-actions">
               <button className="tl-confirm-cancel" onClick={() => setUnbookTarget(null)} disabled={unbooking}>Keep it</button>

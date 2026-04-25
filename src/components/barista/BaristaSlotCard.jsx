@@ -1,6 +1,9 @@
 function BaristaSlotCard({ slot, isOwn }) {
-  const { barista, customer, start_time, end_time, location, meet_link } = slot;
-  const isBooked = customer !== null;
+  const { barista, customers = [], start_time, end_time, location, meet_link, max_participants = 1, spots_left } = slot;
+  const left = spots_left ?? Math.max(0, max_participants - customers.length);
+  const isBooked = left <= 0;
+  const isGroup = max_participants > 1;
+  const customer = customers[0]; // legacy "first booker" reference for the inline tag
 
   const initials = barista.name
     .split(' ')
@@ -19,8 +22,12 @@ function BaristaSlotCard({ slot, isOwn }) {
       <div className="slot-info">
         <div className="slot-barista-name">
           {isOwn ? 'Your Slot' : barista.name}
-          {isOwn && isBooked && (
-            <span className="own-booked-tag">Booked by {customer.name}</span>
+          {isOwn && customers.length > 0 && (
+            <span className="own-booked-tag">
+              {isGroup
+                ? `${customers.length}/${max_participants} joined`
+                : `Booked by ${customer.name}`}
+            </span>
           )}
         </div>
         <div className="slot-meta">
@@ -44,7 +51,7 @@ function BaristaSlotCard({ slot, isOwn }) {
       </div>
 
       <div className={`slot-status-badge ${isBooked ? 'booked' : isOwn ? 'own-open' : 'open'}`}>
-        {isBooked ? 'Booked' : 'Open'}
+        {isBooked ? (isGroup ? 'Full' : 'Booked') : (isGroup ? `${left} left` : 'Open')}
       </div>
     </div>
   );

@@ -1,10 +1,9 @@
 import { useState, useMemo } from 'react';
 import BaristaTimeRangePicker from './BaristaTimeRangePicker';
 import { deleteSlot, editSlot } from '../../api';
+import { colorOf } from '../../colors';
 
 const HOUR_START=8,HOUR_END=22,HOURS=14,HOUR_H=80,PX_MIN=HOUR_H/60;
-const COLORS=['#8b4513','#1a7a40','#2980b9','#7b4f9e','#c8773a','#c0392b','#2c7873'];
-const colorOf=(id)=>COLORS[id%COLORS.length];
 const fmtTime=(dt)=>new Date(dt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
 const topOf=(s)=>{const d=new Date(s.start_time);return(d.getHours()*60+d.getMinutes()-HOUR_START*60)*PX_MIN;};
 const heightOf=(s)=>Math.max(24,(new Date(s.end_time)-new Date(s.start_time))/60000*PX_MIN);
@@ -30,7 +29,7 @@ export default function BaristaDayTimeline({ date, slots, barista, token, startD
   const formatted = new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
   const ownSlots  = slots.filter(s=>s.barista.id===barista.id);
   const inRange   = (!startDate || date >= startDate) && (!endDate || date <= endDate);
-  const openCount = slots.filter(s=>s.customer===null).length;
+  const openCount = slots.filter(s=>(s.spots_left ?? 0) > 0).length;
   const laid      = useMemo(()=>layoutSlots(slots),[slots]);
 
   function handlePickerConfirm(newSlots){ newSlots.forEach(s=>onSlotCreated(s)); setShowPicker(false); }
@@ -87,8 +86,26 @@ export default function BaristaDayTimeline({ date, slots, barista, token, startD
             <div className="tl-detail-row"><span className="tl-detail-label">Host</span><span className="tl-detail-val">{detailSlot.barista.name}</span></div>
             <div className="tl-detail-row"><span className="tl-detail-label">Time</span><span className="tl-detail-val">{fmtTime(detailSlot.start_time)} – {fmtTime(detailSlot.end_time)}</span></div>
             <div className="tl-detail-row"><span className="tl-detail-label">Location</span><span className="tl-detail-val">{detailSlot.location||'—'}</span></div>
-            <div className="tl-detail-row"><span className="tl-detail-label">Status</span><span className="tl-detail-val">{detailSlot.customer?`Booked — ${detailSlot.customer.name}`:'Open'}</span></div>
-            {detailSlot.customer?.email&&<div className="tl-detail-row"><span className="tl-detail-label">Email</span><span className="tl-detail-val">{detailSlot.customer.email}</span></div>}
+            {(() => {
+              const cap = detailSlot.max_participants ?? 1;
+              const taken = detailSlot.customers?.length ?? 0;
+              const status = taken === 0 ? 'Open' : (cap > 1 ? `${taken} of ${cap} joined` : `Booked — ${detailSlot.customers[0].name}`);
+              return (
+                <div className="tl-detail-row">
+                  <span className="tl-detail-label">Status</span>
+                  <span className="tl-detail-val">{status}</span>
+                </div>
+              );
+            })()}
+            {(detailSlot.customers || []).map(c => (
+              <div key={c.id} className="tl-detail-row">
+                <span className="tl-detail-label">Participant</span>
+                <span className="tl-detail-val">
+                  {c.name}
+                  {c.email && <> · <a href={`mailto:${c.email}`} style={{ color: '#c8773a' }}>{c.email}</a></>}
+                </span>
+              </div>
+            ))}
             {detailSlot.notes&&<div className="tl-detail-row"><span className="tl-detail-label">Notes</span><span className="tl-detail-val" style={{fontStyle:'italic'}}>{detailSlot.notes}</span></div>}
             <button className="tl-detail-dismiss" onClick={()=>setDetailSlot(null)}>✕ Dismiss</button>
           </div>
@@ -101,7 +118,7 @@ export default function BaristaDayTimeline({ date, slots, barista, token, startD
             <div className="tl-slots">
               {laid.map(({slot,col,n})=>{
                 const isOwn=slot.barista.id===barista.id;
-                const isOpen=slot.customer===null;
+                const isOpen=(slot.customers?.length ?? 0)===0;
                 const color=isOwn?'#c8773a':colorOf(slot.barista.id);
                 const h=heightOf(slot);
                 return(
@@ -148,7 +165,7 @@ export default function BaristaDayTimeline({ date, slots, barista, token, startD
             <div className="tl-confirm-title">Delete this slot?</div>
             <div className="tl-confirm-sub">
               {fmtTime(deleteTarget.start_time)}–{fmtTime(deleteTarget.end_time)}
-              {deleteTarget.customer&&<span className="tl-confirm-warn"> · Has a booking!</span>}
+              {(deleteTarget.customers?.length ?? 0) > 0 && <span className="tl-confirm-warn"> · Has {deleteTarget.customers.length} booking{deleteTarget.customers.length === 1 ? '' : 's'}!</span>}
             </div>
             <div className="tl-confirm-actions">
               <button className="tl-confirm-cancel" onClick={()=>setDeleteTarget(null)}>Cancel</button>

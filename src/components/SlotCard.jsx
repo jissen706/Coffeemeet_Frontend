@@ -1,6 +1,8 @@
 function SlotCard({ slot, onBook }) {
-  const { barista, customer, start_time, end_time, location } = slot;
-  const isBooked = customer !== null;
+  const { barista, customers = [], start_time, end_time, location, max_participants = 1, spots_left } = slot;
+  const left = spots_left ?? Math.max(0, max_participants - customers.length);
+  const isBooked = left <= 0;
+  const isGroup = max_participants > 1;
 
   const initials = barista.name
     .split(' ')
@@ -30,10 +32,10 @@ function SlotCard({ slot, onBook }) {
       </div>
 
       {isBooked ? (
-        <div className="slot-status-badge booked">Booked</div>
+        <div className="slot-status-badge booked">{isGroup ? 'Full' : 'Booked'}</div>
       ) : (
         <button className="slot-book-btn" onClick={() => onBook(slot)}>
-          Book
+          {isGroup ? `Join (${left} left)` : 'Book'}
         </button>
       )}
     </div>

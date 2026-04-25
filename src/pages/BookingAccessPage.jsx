@@ -39,7 +39,9 @@ function BookingAccessPage() {
     setError('');
     try {
       const customer = await lookupCustomerByEmail(cafe.id, email.trim());
-      const bookedSlot = slots.find(s => s.customer?.id === customer.user.id);
+      const bookedSlot = slots.find(s =>
+        (s.customers || []).some(c => c.id === customer.user.id)
+      );
       // Store session for CustomerPage to pick up
       sessionStorage.setItem('customer_token', customer.access_token);
       if (bookedSlot) {

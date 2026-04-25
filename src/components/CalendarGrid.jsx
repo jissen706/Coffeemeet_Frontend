@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import DayCell from './DayCell';
+import { colorOf } from '../colors';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -31,7 +32,7 @@ function getMonthDays(year, month) {
   return cells;
 }
 
-function CalendarGrid({ slots, startDate, selectedDate, onSelectDate, myBookedDates }) {
+function CalendarGrid({ slots, startDate, selectedDate, onSelectDate, myBookedDates, selectedHostId }) {
   const initialMonth = useMemo(() => {
     if (startDate) {
       const d = new Date(startDate);
@@ -52,6 +53,20 @@ function CalendarGrid({ slots, startDate, selectedDate, onSelectDate, myBookedDa
     }
     return map;
   }, [slots]);
+
+  // Dates where the currently-filtered host has at least one slot.
+  const hostDates = useMemo(() => {
+    if (selectedHostId == null) return null;
+    const set = new Set();
+    for (const s of slots) {
+      if (s.barista?.id === selectedHostId) {
+        set.add(new Date(s.start_time).toLocaleDateString('en-CA'));
+      }
+    }
+    return set;
+  }, [slots, selectedHostId]);
+
+  const hostColor = selectedHostId != null ? colorOf(selectedHostId) : null;
 
   const { year, month } = currentMonth;
   const cells = getMonthDays(year, month);
@@ -104,8 +119,9 @@ function CalendarGrid({ slots, startDate, selectedDate, onSelectDate, myBookedDa
         <div className="calendar-days">
           {cells.map((cell, i) => {
             const daySlots = cell.dateStr ? (slotsByDate[cell.dateStr] || []) : [];
-            const openCount = daySlots.filter((s) => s.customer === null).length;
+            const openCount = daySlots.filter((s) => s.status !== 'booked').length;
             const isMyBooking = cell.dateStr ? myBookedDates.has(cell.dateStr) : false;
+            const isHostHighlight = hostDates?.has(cell.dateStr) || false;
             return (
               <DayCell
                 key={i}
@@ -117,6 +133,7 @@ function CalendarGrid({ slots, startDate, selectedDate, onSelectDate, myBookedDa
                 isSelected={selectedDate === cell.dateStr}
                 isToday={cell.dateStr === today}
                 isMyBooking={isMyBooking}
+                hostHighlightColor={isHostHighlight ? hostColor : null}
                 onClick={cell.inMonth ? () => onSelectDate(selectedDate === cell.dateStr ? null : cell.dateStr) : undefined}
               />
             );

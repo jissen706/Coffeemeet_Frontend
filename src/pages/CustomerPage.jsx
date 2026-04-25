@@ -27,6 +27,7 @@ function CustomerPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedHostId, setSelectedHostId] = useState(null);
 
   const [modalSlot, setModalSlot] = useState(null);
   const [view, setView] = useState('main');
@@ -61,11 +62,15 @@ function CustomerPage() {
         setSlots(slotsData);
         setBaristas(baristasData.map((b) => ({ ...b, expertise: getExpertise(b.id) })));
 
-        // Restore booked session — but clear it if the host already unbooked
+        // Restore booked session — but clear it if the host already unbooked.
+        // For group slots we just need to know I'm still on the bookings list;
+        // we re-check by looking for my slot id in the persisted state and
+        // confirming the slot still has at least one booking (the per-customer
+        // check happens below in lookup/return flows).
         const persistedSlotId = sessionStorage.getItem('my_booked_slot_id');
         if (persistedSlotId) {
           const bookedSlot = slotsData.find(s => s.id === Number(persistedSlotId));
-          if (bookedSlot && bookedSlot.customer !== null) {
+          if (bookedSlot && (bookedSlot.customers?.length ?? 0) > 0) {
             const date = new Date(bookedSlot.start_time).toLocaleDateString('en-CA');
             setMyBookedDates(new Set([date]));
             setSelectedDate(date);
@@ -88,8 +93,8 @@ function CustomerPage() {
   const myBookedSlot = useMemo(() => {
     if (!myBookedSlotId) return null;
     const slot = slots.find(s => s.id === myBookedSlotId);
-    // Return null if the slot no longer exists or was unbooked by the host
-    return (slot && slot.customer !== null) ? slot : null;
+    // Return null if the slot no longer exists or has no bookings
+    return (slot && (slot.customers?.length ?? 0) > 0) ? slot : null;
   }, [slots, myBookedSlotId]);
 
   const slotsByDate = useMemo(() => {
@@ -118,7 +123,9 @@ function CustomerPage() {
     const customer = await createCustomer(cafe.id, { name, email });
 
     // Check if they already have a booking in this cafe
-    const existingSlot = slots.find(s => s.customer?.id === customer.user.id);
+    const existingSlot = slots.find(s =>
+      (s.customers || []).some(c => c.id === customer.user.id)
+    );
     if (existingSlot) {
       // Restore their session and show them their booking
       setCustomerToken(customer.access_token);
@@ -151,7 +158,9 @@ function CustomerPage() {
     setReturnError('');
     try {
       const customer = await lookupCustomerByEmail(cafe.id, returnEmail.trim());
-      const bookedSlot = slots.find(s => s.customer?.id === customer.user.id);
+      const bookedSlot = slots.find(s =>
+        (s.customers || []).some(c => c.id === customer.user.id)
+      );
       if (!bookedSlot) {
         setReturnError('No active booking found for this email.');
         return;
@@ -188,8 +197,11 @@ function CustomerPage() {
         setShowReturnForm(true);
         return;
       }
-      // Optimistic fallback for other errors
-      setSlots((prev) => prev.map((s) => s.id === slotId ? { ...s, customer: null } : s));
+      // Optimistic fallback for other errors — clear the bookings on this slot
+      // locally; next page load will pull authoritative state from the server.
+      setSlots((prev) => prev.map((s) =>
+        s.id === slotId ? { ...s, customers: [] } : s
+      ));
     }
     const cancelledSlot = slots.find((s) => s.id === slotId);
     if (cancelledSlot) {
@@ -232,13 +244,19 @@ function CustomerPage() {
           ownerName=""
         />
         <div className="main-layout">
-          <BaristaSidebar baristas={baristas} description={cafe?.description} />
+          <BaristaSidebar
+            baristas={baristas}
+            description={cafe?.description}
+            selectedHostId={selectedHostId}
+            onSelectHost={setSelectedHostId}
+          />
           <CalendarGrid
             slots={slots}
             startDate={cafe?.start_date}
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
             myBookedDates={myBookedDates}
+            selectedHostId={selectedHostId}
           />
           {selectedDate && (
             <DayTimeline

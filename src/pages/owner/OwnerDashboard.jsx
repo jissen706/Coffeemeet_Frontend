@@ -14,7 +14,7 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
   const [cafes, setCafes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
-  const [form, setForm] = useState({ name: '', start_date: '', end_date: '', one_slot: true, description: '' });
+  const [form, setForm] = useState({ name: '', start_date: '', end_date: '', one_slot: true, description: '', max_participants: 1 });
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
   const [shareLinks, setShareLinks] = useState(null);
@@ -46,12 +46,19 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
     setCreateError('');
     try {
       const cafe = await createCafeApi(
-        { name: form.name, start_date: form.start_date, end_date: form.end_date, one_slot: form.one_slot, description: form.description.trim() || null },
+        {
+          name: form.name,
+          start_date: form.start_date,
+          end_date: form.end_date,
+          one_slot: form.one_slot,
+          description: form.description.trim() || null,
+          max_participants: Math.max(1, Number(form.max_participants) || 1),
+        },
         token
       );
       setCafes(prev => [...prev, cafe]);
       setShowCreate(false);
-      setForm({ name: '', start_date: '', end_date: '', one_slot: true, description: '' });
+      setForm({ name: '', start_date: '', end_date: '', one_slot: true, description: '', max_participants: 1 });
       setShareLinks(cafe);
     } catch (err) {
       setCreateError(err.message);
@@ -157,6 +164,22 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
                 />
                 One slot per customer
               </label>
+              <div className="form-field" style={{ marginTop: 12 }}>
+                <label className="form-label">
+                  Participants per slot
+                  <span style={{ fontWeight: 400, opacity: 0.6 }}>
+                    {' '}(1 for 1:1 chats, 2+ for group chats)
+                  </span>
+                </label>
+                <input
+                  className="form-input"
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={form.max_participants}
+                  onChange={e => setForm(p => ({ ...p, max_participants: e.target.value }))}
+                />
+              </div>
               <div className="form-field" style={{ marginTop: 12 }}>
                 <label className="form-label">Description <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></label>
                 <textarea

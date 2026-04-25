@@ -1,7 +1,7 @@
 import SlotCard from './SlotCard';
 
 function SlotPopup({ date, slots, onClose, onBook }) {
-  const openCount = slots.filter((s) => s.customer === null).length;
+  const openCount = slots.filter((s) => (s.spots_left ?? 0) > 0).length;
 
   const formatted = new Date(date + 'T12:00:00').toLocaleDateString('en-US', {
     weekday: 'long',

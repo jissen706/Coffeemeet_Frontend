@@ -7,7 +7,7 @@ function BaristaSlotPopup({ date, slots, barista, onClose, onSlotCreated }) {
 
   const ownSlots   = slots.filter((s) => s.barista.id === barista.id);
   const otherSlots = slots.filter((s) => s.barista.id !== barista.id);
-  const totalOpen  = slots.filter((s) => s.customer === null).length;
+  const totalOpen  = slots.filter((s) => (s.spots_left ?? 0) > 0).length;
 
   const formatted = new Date(date + 'T12:00:00').toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric',

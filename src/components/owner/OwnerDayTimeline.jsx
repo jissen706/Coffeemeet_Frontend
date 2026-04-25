@@ -1,9 +1,8 @@
 import { useState, useMemo } from 'react';
 import { ownerDeleteSlot, ownerUnbookSlot } from '../../api';
+import { colorOf } from '../../colors';
 
 const HOUR_START = 8, HOURS = 14, HOUR_H = 80, PX_MIN = HOUR_H / 60;
-const COLORS = ['#8b4513','#1a7a40','#2980b9','#7b4f9e','#c8773a','#c0392b','#2c7873'];
-const colorOf  = (id) => COLORS[id % COLORS.length];
 const fmtTime  = (dt) => new Date(dt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 const topOf    = (s)  => { const d = new Date(s.start_time); return (d.getHours()*60+d.getMinutes()-HOUR_START*60)*PX_MIN; };
 const heightOf = (s)  => Math.max(24, (new Date(s.end_time)-new Date(s.start_time))/60000*PX_MIN);
@@ -21,13 +20,15 @@ function layoutSlots(slots) {
   return rows.map(({ slot, col }) => ({ slot, col, n }));
 }
 
+const isBooked = (s) => (s.customers?.length ?? 0) > 0;
+
 export default function OwnerDayTimeline({ date, slots, token, onClose, onSlotDeleted, onSlotUnbooked }) {
   const [detailSlot, setDetailSlot] = useState(null);
   const [confirm, setConfirm] = useState(null); // { type: 'delete'|'unbook', slot }
   const [processing, setProcessing] = useState(false);
 
   const formatted = new Date(date+'T12:00:00').toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
-  const openCount  = slots.filter(s => s.customer === null).length;
+  const openCount  = slots.filter(s => (s.spots_left ?? 0) > 0).length;
   const laid       = useMemo(() => layoutSlots(slots), [slots]);
 
   async function handleConfirm() {
@@ -41,7 +42,7 @@ export default function OwnerDayTimeline({ date, slots, token, onClose, onSlotDe
     } else {
       onSlotUnbooked(slotId);
       if (detailSlot?.id === slotId) {
-        setDetailSlot(prev => ({ ...prev, customer: null }));
+        setDetailSlot(prev => ({ ...prev, customers: [], status: 'open' }));
       }
     }
     setConfirm(null);
@@ -84,15 +85,26 @@ export default function OwnerDayTimeline({ date, slots, token, onClose, onSlotDe
               <span className="tl-detail-val">{detailSlot.location || '—'}</span>
             </div>
             <div className="tl-detail-row">
-              <span className="tl-detail-label">Participant</span>
-              <span className="tl-detail-val">{detailSlot.customer ? detailSlot.customer.name : <em>Open</em>}</span>
+              <span className="tl-detail-label">
+                Participants
+                {detailSlot.max_participants > 1 && (
+                  <span style={{ opacity: 0.7, fontWeight: 400 }}>
+                    {' '}({detailSlot.customers?.length ?? 0}/{detailSlot.max_participants})
+                  </span>
+                )}
+              </span>
+              <span className="tl-detail-val">
+                {isBooked(detailSlot)
+                  ? detailSlot.customers.map(c => c.name).join(', ')
+                  : <em>Open</em>}
+              </span>
             </div>
             <div className="tl-detail-owner-actions">
-              {detailSlot.customer && (
+              {isBooked(detailSlot) && (
                 <button
                   className="tl-detail-action-btn unbook"
                   onClick={() => setConfirm({ type: 'unbook', slot: detailSlot })}
-                >Unbook</button>
+                >Unbook all</button>
               )}
               <button
                 className="tl-detail-action-btn delete"
@@ -123,17 +135,19 @@ export default function OwnerDayTimeline({ date, slots, token, onClose, onSlotDe
               ))}
               <div className="tl-slots">
                 {laid.map(({ slot, col, n }) => {
-                  const isOpen = slot.customer === null;
+                  const cap = slot.max_participants ?? 1;
+                  const taken = slot.customers?.length ?? 0;
+                  const fullyOpen = taken === 0;
                   const color  = colorOf(slot.barista.id);
                   const h      = heightOf(slot);
                   return (
                     <div
                       key={slot.id}
-                      className={`tl-slot${isOpen ? ' tl-open' : ' tl-booked'}`}
+                      className={`tl-slot${fullyOpen ? ' tl-open' : ' tl-booked'}`}
                       style={{
                         top: topOf(slot), height: h,
                         left: `${(col/n)*100}%`, width: `calc(${(1/n)*100}% - 4px)`,
-                        background: isOpen ? color : `${color}88`,
+                        background: fullyOpen ? color : `${color}88`,
                         borderLeftColor: color,
                         color: '#fff',
                         cursor: 'pointer',
@@ -142,9 +156,9 @@ export default function OwnerDayTimeline({ date, slots, token, onClose, onSlotDe
                     >
                       <div className="tl-slot-text">
                         <div className="tl-slot-name">{slot.barista.name.split(' ')[0]}</div>
-                        {!isOpen && (
+                        {!fullyOpen && (
                           <div className="tl-slot-name" style={{ fontSize: '0.62rem', opacity: 0.85 }}>
-                            {slot.customer.name.split(' ')[0]}
+                            {cap > 1 ? `${taken}/${cap}` : slot.customers[0].name.split(' ')[0]}
                           </div>
                         )}
                         {h >= 38 && (
@@ -170,7 +184,7 @@ export default function OwnerDayTimeline({ date, slots, token, onClose, onSlotDe
             </div>
             <div className="tl-confirm-sub">
               {fmtTime(confirm.slot.start_time)}–{fmtTime(confirm.slot.end_time)} · {confirm.slot.barista.name.split(' ')[0]}
-              {confirm.type === 'unbook' && confirm.slot.customer && ` · ${confirm.slot.customer.name}`}
+              {confirm.type === 'unbook' && isBooked(confirm.slot) && ` · ${confirm.slot.customers.map(c => c.name).join(', ')}`}
             </div>
             <div className="tl-confirm-actions">
               <button className="tl-confirm-cancel" onClick={() => setConfirm(null)} disabled={processing}>

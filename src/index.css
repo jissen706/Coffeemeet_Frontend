@@ -813,6 +813,26 @@ body {
   align-self: flex-start;
 }
 
+/* ---- Host filter highlight on calendar day cells ---- */
+.day-cell.host-highlight {
+  position: relative;
+}
+
+.host-highlight-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
+}
+
+/* Selected host card visual treatment in the sidebar */
+.barista-card-selected {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
 /* ---- Shared booking detail rows ---- */
 .booking-detail-row {
   display: flex;

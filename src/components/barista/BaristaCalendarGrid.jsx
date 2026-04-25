@@ -108,7 +108,7 @@ function BaristaCalendarGrid({ slots, startDate, endDate, barista, token, select
         <div className="calendar-days">
           {cells.map((cell, i) => {
             const daySlots   = cell.dateStr ? (slotsByDate[cell.dateStr] || []) : [];
-            const openCount  = daySlots.filter((s) => s.customer === null).length;
+            const openCount  = daySlots.filter((s) => (s.spots_left ?? 0) > 0).length;
             const ownCount   = daySlots.filter((s) => s.barista.id === barista.id).length;
             const inRange    = cell.dateStr && (!startDate || cell.dateStr >= startDate) && (!endDate || cell.dateStr <= endDate);
             return (

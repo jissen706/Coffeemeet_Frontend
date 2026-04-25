@@ -106,7 +106,7 @@ export default function OwnerCafeView() {
   }
 
   function handleSlotUnbooked(slotId) {
-    setSlots(prev => prev.map(s => s.id === slotId ? { ...s, customer: null } : s));
+    setSlots(prev => prev.map(s => s.id === slotId ? { ...s, customers: [], status: 'open' } : s));
   }
 
   async function handleRemoveConfirm() {

@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
+import { colorOf } from '../colors';
 
 const HOUR_START = 8, HOUR_END = 22, HOURS = 14, HOUR_H = 80, PX_MIN = HOUR_H / 60;
-const COLORS = ['#8b4513','#1a7a40','#2980b9','#7b4f9e','#c8773a','#c0392b','#2c7873'];
-const colorOf  = (id) => COLORS[id % COLORS.length];
 const fmtTime  = (dt) => new Date(dt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
 const fmtDate  = (dt) => new Date(dt).toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
 const topOf    = (s)  => { const d=new Date(s.start_time); return (d.getHours()*60+d.getMinutes()-HOUR_START*60)*PX_MIN; };
@@ -28,11 +27,12 @@ export default function DayTimeline({ date, slots, onClose, onBook, myBookedSlot
   const [alreadyBookedMsg, setAlreadyBookedMsg] = useState(false);
 
   const formatted = new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-  const openCount = slots.filter(s=>s.customer===null).length;
+  const isFull = (s) => (s.spots_left ?? 0) <= 0;
+  const openCount = slots.filter(s=>!isFull(s)).length;
   const laid = useMemo(()=>layoutSlots(slots),[slots]);
 
   function handleSlotClick(slot) {
-    if (slot.customer !== null) return; // booked by someone else, not clickable
+    if (isFull(slot)) return; // at capacity, not clickable
     if (myBookedSlotId) {
       // already has a booking — flash message instead of opening flow
       setAlreadyBookedMsg(true);
@@ -79,8 +79,13 @@ export default function DayTimeline({ date, slots, onClose, onBook, myBookedSlot
               ))}
               <div className="tl-slots">
                 {laid.map(({slot,col,n})=>{
-                  const isOpen = slot.customer === null;
+                  const cap = slot.max_participants ?? 1;
+                  const taken = (slot.customers?.length) ?? 0;
+                  const spotsLeft = slot.spots_left ?? Math.max(0, cap - taken);
+                  const full = spotsLeft <= 0;
+                  const isOpen = !full;
                   const isMySlot = slot.id === myBookedSlotId;
+                  const isGroup = cap > 1;
                   const color = colorOf(slot.barista.id);
                   const h = heightOf(slot);
 
@@ -105,6 +110,19 @@ export default function DayTimeline({ date, slots, onClose, onBook, myBookedSlot
                     opacity = 0.6;
                   }
 
+                  // Status sub-line: prefer "X spots left" for group slots,
+                  // fall back to time range for 1:1 (matches the legacy look).
+                  let statusLine = null;
+                  if (isMySlot) {
+                    statusLine = isGroup
+                      ? `${taken} of ${cap} joined`
+                      : null;
+                  } else if (isOpen && isGroup) {
+                    statusLine = spotsLeft === 1 ? '1 spot left' : `${spotsLeft} spots left`;
+                  } else if (full && isGroup) {
+                    statusLine = 'Full';
+                  }
+
                   return (
                     <div key={slot.id}
                       className={`tl-slot${isOpen?' tl-open':' tl-booked'}${isMySlot?' tl-my-slot':''}`}
@@ -126,6 +144,14 @@ export default function DayTimeline({ date, slots, onClose, onBook, myBookedSlot
                         {h>=38&&(
                           <div className="tl-slot-time" style={{color: isOpen||isMySlot ? 'rgba(255,255,255,0.85)' : '#aaa'}}>
                             {fmtTime(slot.start_time)}–{fmtTime(slot.end_time)}
+                            {statusLine && (
+                              <span style={{ marginLeft: 6, fontWeight: 700 }}>· {statusLine}</span>
+                            )}
+                          </div>
+                        )}
+                        {h<38 && statusLine && (
+                          <div className="tl-slot-time" style={{ color: isOpen||isMySlot ? 'rgba(255,255,255,0.85)' : '#aaa' }}>
+                            {statusLine}
                           </div>
                         )}
                         {isMySlot && slot.notes && (
@@ -144,7 +170,7 @@ export default function DayTimeline({ date, slots, onClose, onBook, myBookedSlot
                         <button
                           className="tl-slot-book-btn"
                           onClick={(e) => { e.stopPropagation(); onBook(slot); }}
-                        >Book</button>
+                        >{isGroup ? 'Join' : 'Book'}</button>
                       )}
                     </div>
                   );

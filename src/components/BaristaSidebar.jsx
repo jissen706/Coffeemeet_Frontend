@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { colorOf } from '../colors';
 
-function BaristaSidebar({ baristas, description }) {
+function BaristaSidebar({ baristas, description, selectedHostId, onSelectHost }) {
   const [hovered, setHovered] = useState(null);
 
   return (
@@ -16,7 +17,20 @@ function BaristaSidebar({ baristas, description }) {
 
       {/* Scrollable hosts section */}
       <div className="sidebar-hosts-scroll">
-        <div className="sidebar-title">Hosts</div>
+        <div className="sidebar-title">
+          Hosts
+          {selectedHostId != null && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onSelectHost?.(null); }}
+              style={{
+                marginLeft: 10, background: 'none', border: 'none',
+                color: 'var(--accent)', cursor: 'pointer', fontSize: '0.7rem',
+                textTransform: 'none', letterSpacing: 0, fontWeight: 600,
+              }}
+            >Clear filter ✕</button>
+          )}
+        </div>
 
         {baristas.length === 0 ? (
           <div className="no-baristas">
@@ -35,16 +49,28 @@ function BaristaSidebar({ baristas, description }) {
               ? barista.bio.length > 60 ? barista.bio.slice(0, 60).trimEnd() + '…' : barista.bio
               : null;
 
+            const hostColor = colorOf(barista.id);
+            const isSelected = selectedHostId === barista.id;
+
             return (
               <div
                 key={barista.id}
-                className="barista-card"
+                className={`barista-card${isSelected ? ' barista-card-selected' : ''}`}
                 onMouseEnter={() => setHovered(barista.id)}
                 onMouseLeave={() => setHovered(null)}
-                style={{ position: 'relative' }}
+                onClick={() => onSelectHost?.(isSelected ? null : barista.id)}
+                style={{
+                  position: 'relative',
+                  cursor: onSelectHost ? 'pointer' : 'default',
+                  borderColor: isSelected ? hostColor : undefined,
+                  boxShadow: isSelected ? `-3px 0 0 ${hostColor}` : undefined,
+                }}
               >
                 <div className="barista-card-top">
-                  <div className="barista-avatar">{initials}</div>
+                  <div
+                    className="barista-avatar"
+                    style={{ background: hostColor }}
+                  >{initials}</div>
                   <div className="barista-name">{barista.name}</div>
                 </div>
 
