@@ -1,4 +1,4 @@
-function DayCell({ day, inMonth, dateStr, openCount, totalCount, isSelected, isToday, isMyBooking, ownSlotCount = 0, hostHighlightColor = null, onClick, onCreateClick }) {
+function DayCell({ day, inMonth, dateStr, openCount, totalCount, isSelected, isToday, isMyBooking, ownSlotCount = 0, hostHighlightColor = null, onClick, onCreateClick, createLabel = '+ Create Slots' }) {
   if (!inMonth) {
     return (
       <div className="day-cell other-month">
@@ -59,7 +59,7 @@ function DayCell({ day, inMonth, dateStr, openCount, totalCount, isSelected, isT
           className="barista-cell-create-btn"
           onClick={(e) => { e.stopPropagation(); onCreateClick(); }}
         >
-          + Create Slots
+          {createLabel}
         </button>
       )}
     </div>

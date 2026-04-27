@@ -32,7 +32,7 @@ function getMonthDays(year, month) {
   return cells;
 }
 
-function CalendarGrid({ slots, startDate, selectedDate, onSelectDate, myBookedDates, selectedHostId }) {
+function CalendarGrid({ slots, startDate, selectedDate, onSelectDate, myBookedDates, selectedHostId, manualMode = false, onManualSlotForDate }) {
   const initialMonth = useMemo(() => {
     if (startDate) {
       const d = new Date(startDate);
@@ -87,7 +87,12 @@ function CalendarGrid({ slots, startDate, selectedDate, onSelectDate, myBookedDa
   }
 
   return (
-    <div className="calendar-section">
+    <div className={`calendar-section${manualMode ? ' calendar-manual-mode' : ''}`}>
+      {manualMode && (
+        <div className="manual-mode-banner">
+          📅 Manual slot mode — hover any day and click <strong>+ New Manual Slot</strong> to schedule
+        </div>
+      )}
       <div className="calendar-header">
         <div className="month-nav">
           <button className="nav-btn" onClick={prevMonth}>&#8249;</button>
@@ -135,6 +140,10 @@ function CalendarGrid({ slots, startDate, selectedDate, onSelectDate, myBookedDa
                 isMyBooking={isMyBooking}
                 hostHighlightColor={isHostHighlight ? hostColor : null}
                 onClick={cell.inMonth ? () => onSelectDate(selectedDate === cell.dateStr ? null : cell.dateStr) : undefined}
+                onCreateClick={manualMode && cell.inMonth && onManualSlotForDate
+                  ? () => onManualSlotForDate(cell.dateStr)
+                  : undefined}
+                createLabel="+ New Manual Slot"
               />
             );
           })}

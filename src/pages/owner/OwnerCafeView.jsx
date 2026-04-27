@@ -5,6 +5,7 @@ import CalendarGrid from '../../components/CalendarGrid';
 import OwnerDayTimeline from '../../components/owner/OwnerDayTimeline';
 import OwnerSettings from '../../components/owner/OwnerSettings';
 import ShareLinksPopup from '../../components/owner/ShareLinksPopup';
+import ManualSlotCreator from '../../components/owner/ManualSlotCreator';
 import {
   getOwnerCafe, getOwnerCafeSlots,
   getOwnerCafeBaristas, getCafeCustomers,
@@ -45,6 +46,10 @@ export default function OwnerCafeView() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showShare, setShowShare] = useState(false);
+
+  // ── manual-slot mode ─────────────────────────────────────────────────────
+  const [manualMode, setManualMode] = useState(false);
+  const [manualDate, setManualDate] = useState(null); // selected date for the popup
 
   // ── people state (loaded lazily) ─────────────────────────────────────────
   const [baristas,         setBaristas]         = useState([]);
@@ -89,6 +94,16 @@ export default function OwnerCafeView() {
         .finally(() => setCustomersLoading(false));
     }
   }, [activeView]);
+
+  // Manual mode needs the customer roster for the participant autocomplete.
+  useEffect(() => {
+    if (!auth || !manualMode || customersLoaded || customersLoading) return;
+    setCustomersLoading(true);
+    getCafeCustomers(cafeId, auth.token)
+      .then(data => { setCustomers(data); setCustomersLoaded(true); })
+      .catch(() => setCustomersLoaded(true))
+      .finally(() => setCustomersLoading(false));
+  }, [manualMode, auth, cafeId, customersLoaded, customersLoading]);
 
   const slotsByDate = useMemo(() => {
     const map = {};
@@ -162,6 +177,17 @@ export default function OwnerCafeView() {
             </div>
           </div>
           <div className="owner-cafe-topbar-right">
+            <button
+              className={`owner-share-btn${manualMode ? ' owner-manual-active' : ''}`}
+              onClick={() => {
+                setManualMode(m => !m);
+                setSelectedDate(null);
+                if (activeView !== 'calendar') setActiveView('calendar');
+              }}
+              style={manualMode ? { background: '#c8773a', color: '#fff', borderColor: '#c8773a' } : undefined}
+            >
+              {manualMode ? '✕ Exit Manual Mode' : '+ Create Manual Slot'}
+            </button>
             <div className="owner-view-tabs">
               {['baristas', 'customers'].map(v => (
                 <button
@@ -203,10 +229,12 @@ export default function OwnerCafeView() {
               slots={slots}
               startDate={cafe?.start_date}
               selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
+              onSelectDate={manualMode ? () => {} : setSelectedDate}
               myBookedDates={new Set()}
+              manualMode={manualMode}
+              onManualSlotForDate={(d) => setManualDate(d)}
             />
-            {selectedDate && (
+            {selectedDate && !manualMode && (
               <OwnerDayTimeline
                 date={selectedDate}
                 slots={slotsByDate[selectedDate] || []}
@@ -267,6 +295,20 @@ export default function OwnerCafeView() {
 
       {showShare && cafe && (
         <ShareLinksPopup cafe={cafe} onClose={() => setShowShare(false)} />
+      )}
+
+      {manualDate && cafe && (
+        <ManualSlotCreator
+          date={manualDate}
+          cafeId={cafe.id}
+          cafe={cafe}
+          token={auth.token}
+          hosts={baristas}
+          participants={customers}
+          existingSlotsForDate={slotsByDate[manualDate] || []}
+          onSlotCreated={(slot) => setSlots(prev => [...prev, slot])}
+          onClose={() => setManualDate(null)}
+        />
       )}
 
       {removeTarget && (

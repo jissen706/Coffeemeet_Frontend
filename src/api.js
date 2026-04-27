@@ -279,6 +279,19 @@ export async function ownerDeleteSlot(slotId, token) {
   if (!res.ok) throw new Error(`Failed to delete slot (${res.status})`);
 }
 
+export async function createManualSlot(payload, token) {
+  const res = await fetch(`${BASE_URL}/slots/manual`, {
+    method: 'POST',
+    headers: ownerHeaders(token),
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.detail || `Failed to create manual slot (${res.status})`);
+  }
+  return res.json();
+}
+
 export async function ownerUnbookSlot(slotId, token) {
   const res = await fetch(`${BASE_URL}/slots/${slotId}/unbook`, {
     method: 'PATCH',
