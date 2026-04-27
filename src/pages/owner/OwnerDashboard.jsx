@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getOwnerCafes, createCafeApi } from '../../api';
 import ShareLinksPopup from '../../components/owner/ShareLinksPopup';
+import ReminderOffsetPicker from '../../components/owner/ReminderOffsetPicker';
 
 function fmtDate(d) {
   return new Date(d + 'T12:00:00').toLocaleDateString('en-US', {
@@ -14,7 +15,7 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
   const [cafes, setCafes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
-  const [form, setForm] = useState({ name: '', start_date: '', end_date: '', one_slot: true, description: '', max_participants: 1 });
+  const [form, setForm] = useState({ name: '', start_date: '', end_date: '', one_slot: true, description: '', max_participants: 1, reminder_minutes_before: [] });
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
   const [shareLinks, setShareLinks] = useState(null);
@@ -53,12 +54,13 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
           one_slot: form.one_slot,
           description: form.description.trim() || null,
           max_participants: Math.max(1, Number(form.max_participants) || 1),
+          reminder_minutes_before: form.reminder_minutes_before,
         },
         token
       );
       setCafes(prev => [...prev, cafe]);
       setShowCreate(false);
-      setForm({ name: '', start_date: '', end_date: '', one_slot: true, description: '', max_participants: 1 });
+      setForm({ name: '', start_date: '', end_date: '', one_slot: true, description: '', max_participants: 1, reminder_minutes_before: [] });
       setShareLinks(cafe);
     } catch (err) {
       setCreateError(err.message);
@@ -178,6 +180,18 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
                   max={100}
                   value={form.max_participants}
                   onChange={e => setForm(p => ({ ...p, max_participants: e.target.value }))}
+                />
+              </div>
+              <div className="form-field" style={{ marginTop: 12 }}>
+                <label className="form-label">
+                  Reminder Emails
+                  <span style={{ fontWeight: 400, opacity: 0.6 }}>
+                    {' '}(pick any combination — sent to every participant)
+                  </span>
+                </label>
+                <ReminderOffsetPicker
+                  value={form.reminder_minutes_before}
+                  onChange={(v) => setForm(p => ({ ...p, reminder_minutes_before: v }))}
                 />
               </div>
               <div className="form-field" style={{ marginTop: 12 }}>

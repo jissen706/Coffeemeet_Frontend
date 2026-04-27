@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { updateCafe } from '../../api';
+import ReminderOffsetPicker from './ReminderOffsetPicker';
 
 export default function OwnerSettings({ cafe, token, onClose, onCafeUpdated }) {
   const [cafeName,        setCafeName]        = useState(cafe.name);
@@ -8,6 +9,7 @@ export default function OwnerSettings({ cafe, token, onClose, onCafeUpdated }) {
   const [oneSlot,         setOneSlot]         = useState(cafe.one_slot);
   const [description,     setDescription]     = useState(cafe.description || '');
   const [maxParticipants, setMaxParticipants] = useState(cafe.max_participants ?? 1);
+  const [reminderMinutes, setReminderMinutes] = useState(cafe.reminder_minutes_before ?? []);
   const [saving,    setSaving]    = useState(false);
   const [saveMsg,   setSaveMsg]   = useState('');
 
@@ -20,6 +22,7 @@ export default function OwnerSettings({ cafe, token, onClose, onCafeUpdated }) {
         name: cafeName, start_date: startDate, end_date: endDate, one_slot: oneSlot,
         description: description.trim() || null,
         max_participants: Math.max(1, Number(maxParticipants) || 1),
+        reminder_minutes_before: reminderMinutes,
       }, token);
       onCafeUpdated(updated);
       setSaveMsg('Saved!');
@@ -81,6 +84,18 @@ export default function OwnerSettings({ cafe, token, onClose, onCafeUpdated }) {
                 max={100}
                 value={maxParticipants}
                 onChange={e => setMaxParticipants(e.target.value)}
+              />
+            </div>
+            <div className="form-field" style={{ marginTop: 12 }}>
+              <label className="form-label">
+                Reminder Emails
+                <span style={{ fontWeight: 400, opacity: 0.6 }}>
+                  {' '}(pick any combination — each one sends to every participant)
+                </span>
+              </label>
+              <ReminderOffsetPicker
+                value={reminderMinutes}
+                onChange={setReminderMinutes}
               />
             </div>
             <div className="form-field" style={{ marginTop: 12 }}>
