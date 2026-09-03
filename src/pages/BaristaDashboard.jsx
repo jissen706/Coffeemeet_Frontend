@@ -5,7 +5,7 @@ import HostSlotsSidebar from '../components/barista/HostSlotsSidebar';
 import BaristaLogin from '../components/barista/BaristaLogin';
 import BaristaCalendarGrid from '../components/barista/BaristaCalendarGrid';
 import BaristaDayTimeline from '../components/barista/BaristaDayTimeline';
-import { getCafe, getHostSlots, getCafeBaristas } from '../api';
+import { getCafe, getHostSlots, getCafeBaristas, isAuthError } from '../api';
 
 const EXPERTISE_OPTIONS = [
   'Latte Art', 'Cold Brew Master', 'Espresso Expert',
@@ -55,7 +55,12 @@ function BaristaDashboard() {
         setAllBaristas(baristasData.map((b) => ({ ...b, expertise: getExpertise(b.id) })));
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        if (isAuthError(err)) {
+          setBarista(null);
+        }
+        setLoading(false);
+      });
   }, [barista]);
 
   const slotsByDate = useMemo(() => {

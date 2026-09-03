@@ -9,7 +9,7 @@ import ManualSlotCreator from '../../components/owner/ManualSlotCreator';
 import {
   getOwnerCafe, getOwnerCafeSlots,
   getOwnerCafeBaristas, getCafeCustomers,
-  removeBarista, removeCustomer, exportCafeData,
+  removeBarista, removeCustomer, exportCafeData, isAuthError,
 } from '../../api';
 
 const EXPERTISE_OPTIONS = [
@@ -35,6 +35,11 @@ export default function OwnerCafeView() {
   useEffect(() => {
     if (!auth) navigate('/owner', { replace: true });
   }, [auth, navigate]);
+
+  function clearOwnerAuth() {
+    localStorage.removeItem('owner_auth');
+    navigate('/owner', { replace: true });
+  }
 
   // ── main data ────────────────────────────────────────────────────────────
   const [cafe, setCafe] = useState(null);
@@ -73,7 +78,9 @@ export default function OwnerCafeView() {
         setBaristas(baristasData.map(b => ({ ...b, expertise: getExpertise(b.id) })));
         setBaristasLoaded(true);
       })
-      .catch(() => {})
+      .catch((err) => {
+        if (isAuthError(err)) clearOwnerAuth();
+      })
       .finally(() => setLoading(false));
   }, [cafeId, auth]);
 
@@ -83,14 +90,20 @@ export default function OwnerCafeView() {
       setBaristasLoading(true);
       getOwnerCafeBaristas(cafeId, auth.token)
         .then(data => { setBaristas(data); setBaristasLoaded(true); })
-        .catch(() => setBaristasLoaded(true))
+        .catch((err) => {
+          if (isAuthError(err)) clearOwnerAuth();
+          setBaristasLoaded(true);
+        })
         .finally(() => setBaristasLoading(false));
     }
     if (activeView === 'customers' && !customersLoaded) {
       setCustomersLoading(true);
       getCafeCustomers(cafeId, auth.token)
         .then(data => { setCustomers(data); setCustomersLoaded(true); })
-        .catch(() => setCustomersLoaded(true))
+        .catch((err) => {
+          if (isAuthError(err)) clearOwnerAuth();
+          setCustomersLoaded(true);
+        })
         .finally(() => setCustomersLoading(false));
     }
   }, [activeView]);
@@ -101,7 +114,10 @@ export default function OwnerCafeView() {
     setCustomersLoading(true);
     getCafeCustomers(cafeId, auth.token)
       .then(data => { setCustomers(data); setCustomersLoaded(true); })
-      .catch(() => setCustomersLoaded(true))
+      .catch((err) => {
+        if (isAuthError(err)) clearOwnerAuth();
+        setCustomersLoaded(true);
+      })
       .finally(() => setCustomersLoading(false));
   }, [manualMode, auth, cafeId, customersLoaded, customersLoading]);
 
@@ -142,7 +158,9 @@ export default function OwnerCafeView() {
       } else {
         await removeCustomer(item.id, auth.token);
       }
-    } catch { /* UI already updated */ }
+    } catch (err) {
+      if (isAuthError(err)) clearOwnerAuth();
+    }
   }
 
   if (!auth) return null;
@@ -210,6 +228,10 @@ export default function OwnerCafeView() {
                 try {
                   await exportCafeData(cafe.id, auth.token, cafe.name);
                 } catch (err) {
+                  if (isAuthError(err)) {
+                    clearOwnerAuth();
+                    return;
+                  }
                   alert(`Export failed: ${err.message}`);
                 }
               }}>

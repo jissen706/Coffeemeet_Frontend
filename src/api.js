@@ -1,5 +1,22 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+export class ApiError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
+}
+
+export function isAuthError(err) {
+  return err?.status === 401 || /invalid or expired token|401/i.test(err?.message || '');
+}
+
+async function responseError(res, fallback) {
+  const body = await res.json().catch(() => ({}));
+  return new ApiError(body.detail || `${fallback} (${res.status})`, res.status);
+}
+
 // ── Cafe API ──────────────────────────────────────────────────────────────────
 
 export async function getCafe(cafeId) {
@@ -18,7 +35,7 @@ export async function getHostSlots(cafeId, token) {
   const res = await fetch(`${BASE_URL}/cafes/${cafeId}/host-slots`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to load slots (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to load slots');
   return res.json();
 }
 
@@ -71,7 +88,7 @@ export async function createSlot(cafeId, slotData, token) {
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify({ ...slotData, cafe_id: cafeId }),
   });
-  if (!res.ok) throw new Error(`Failed to create slot (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to create slot');
   return res.json();
 }
 
@@ -81,7 +98,7 @@ export async function editSlot(slotId, { location, meet_link, notes }, token) {
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify({ location, meet_link, notes }),
   });
-  if (!res.ok) throw new Error(`Failed to update slot (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to update slot');
   return res.json();
 }
 
@@ -90,7 +107,7 @@ export async function deleteSlot(slotId, token) {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to delete slot (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to delete slot');
 }
 
 // ── Customer API ──────────────────────────────────────────────────────────────
@@ -136,7 +153,7 @@ export async function cancelBooking(slotId, token) {
     method: 'PATCH',
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to cancel booking (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to cancel booking');
   return res.json();
 }
 
@@ -180,7 +197,7 @@ export async function getOwnerCafes(ownerId, token) {
   const res = await fetch(`${BASE_URL}/owners/${ownerId}/cafes`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to load cafes (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to load cafes');
   return res.json();
 }
 
@@ -188,7 +205,7 @@ export async function getOwnerCafe(cafeId, token) {
   const res = await fetch(`${BASE_URL}/cafes/${cafeId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to load cafe (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to load cafe');
   return res.json();
 }
 
@@ -196,7 +213,7 @@ export async function getOwnerCafeSlots(cafeId, token) {
   const res = await fetch(`${BASE_URL}/cafes/${cafeId}/slots`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to load slots (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to load slots');
   return res.json();
 }
 
@@ -206,10 +223,7 @@ export async function createCafeApi(cafeData, token) {
     headers: ownerHeaders(token),
     body: JSON.stringify(cafeData),
   });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.detail || `Failed to create cafe (${res.status})`);
-  }
+  if (!res.ok) throw await responseError(res, 'Failed to create cafe');
   return res.json();
 }
 
@@ -219,7 +233,7 @@ export async function updateCafe(cafeId, data, token) {
     headers: ownerHeaders(token),
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error(`Failed to update cafe (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to update cafe');
   return res.json();
 }
 
@@ -227,7 +241,7 @@ export async function getOwnerCafeBaristas(cafeId, token) {
   const res = await fetch(`${BASE_URL}/cafes/${cafeId}/baristas`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to load baristas (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to load baristas');
   return res.json();
 }
 
@@ -235,7 +249,7 @@ export async function getCafeCustomers(cafeId, token) {
   const res = await fetch(`${BASE_URL}/cafes/${cafeId}/customers`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to load customers (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to load customers');
   return res.json();
 }
 
@@ -243,7 +257,7 @@ export async function exportCafeData(cafeId, token, cafeName) {
   const res = await fetch(`${BASE_URL}/cafes/${cafeId}/export`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to export data (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to export data');
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -260,7 +274,7 @@ export async function removeBarista(baristaId, token) {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to remove barista (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to remove barista');
 }
 
 export async function removeCustomer(customerId, token) {
@@ -268,7 +282,7 @@ export async function removeCustomer(customerId, token) {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to remove customer (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to remove customer');
 }
 
 export async function ownerDeleteSlot(slotId, token) {
@@ -276,7 +290,7 @@ export async function ownerDeleteSlot(slotId, token) {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to delete slot (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to delete slot');
 }
 
 export async function createManualSlot(payload, token) {
@@ -285,10 +299,7 @@ export async function createManualSlot(payload, token) {
     headers: ownerHeaders(token),
     body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.detail || `Failed to create manual slot (${res.status})`);
-  }
+  if (!res.ok) throw await responseError(res, 'Failed to create manual slot');
   return res.json();
 }
 
@@ -297,6 +308,6 @@ export async function ownerUnbookSlot(slotId, token) {
     method: 'PATCH',
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`Failed to unbook slot (${res.status})`);
+  if (!res.ok) throw await responseError(res, 'Failed to unbook slot');
   return res.json();
 }

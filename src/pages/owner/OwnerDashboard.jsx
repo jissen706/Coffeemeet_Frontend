@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getOwnerCafes, createCafeApi } from '../../api';
+import { getOwnerCafes, createCafeApi, isAuthError } from '../../api';
 import ShareLinksPopup from '../../components/owner/ShareLinksPopup';
 import ReminderOffsetPicker from '../../components/owner/ReminderOffsetPicker';
 
@@ -23,9 +23,15 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
   useEffect(() => {
     getOwnerCafes(owner.owner_id, token)
       .then(setCafes)
-      .catch(() => setCafes([]))
+      .catch((err) => {
+        if (isAuthError(err)) {
+          onLogout();
+          return;
+        }
+        setCafes([]);
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [onLogout, owner.owner_id, token]);
 
   const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
 
@@ -63,6 +69,10 @@ export default function OwnerDashboard({ token, owner, onLogout }) {
       setForm({ name: '', start_date: '', end_date: '', one_slot: true, description: '', max_participants: 1, reminder_minutes_before: [] });
       setShareLinks(cafe);
     } catch (err) {
+      if (isAuthError(err)) {
+        onLogout();
+        return;
+      }
       setCreateError(err.message);
     } finally {
       setCreating(false);
